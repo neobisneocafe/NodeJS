@@ -2,10 +2,12 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ImageModule } from './modules/image/image.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
     ImageModule,
+    AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
