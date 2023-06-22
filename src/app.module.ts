@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ImageModule } from './modules/image/image.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { BranchModule } from './modules/branch/branch.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { AuthModule } from './modules/auth/auth.module';
       }),
       inject: [ConfigService],
     }),
+    BranchModule,
   ],
   controllers: [],
 })
