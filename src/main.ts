@@ -13,8 +13,8 @@ async function bootstrap() {
   app.use(timeout('50s'));
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   const config = new DocumentBuilder()
-    .setTitle('Pattern')
-    .setDescription('API pattern for second project at NEOBIS ')
+    .setTitle('Neocafe NodeJS')
+    .setDescription('API documentation for second project at NEOBIS ')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
