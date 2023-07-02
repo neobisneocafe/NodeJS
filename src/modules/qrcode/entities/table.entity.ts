@@ -1,5 +1,6 @@
 import { BaseEntity } from 'src/base/base.entity';
-import { Column, Entity } from 'typeorm';
+import { BranchEntity } from 'src/modules/branch/entities/branch.entity';
+import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity()
 export class TableEntity extends BaseEntity {
@@ -11,4 +12,10 @@ export class TableEntity extends BaseEntity {
 
   @Column()
   qrcode: string;
+
+  @ManyToOne(() => BranchEntity, (branch) => branch.tables, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  branch: BranchEntity;
 }
