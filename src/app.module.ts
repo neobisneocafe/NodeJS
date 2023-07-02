@@ -5,6 +5,7 @@ import { ImageModule } from './modules/image/image.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BranchModule } from './modules/branch/branch.module';
 import { UserModule } from './modules/user/user.module';
+import { QrcodeModule } from './modules/qrcode/qrcode.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { UserModule } from './modules/user/user.module';
       inject: [ConfigService],
     }),
     BranchModule,
+    QrcodeModule,
   ],
   controllers: [],
 })

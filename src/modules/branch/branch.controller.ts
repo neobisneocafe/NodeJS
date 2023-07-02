@@ -27,7 +27,7 @@ export class BranchController {
   }
 
   @ApiOperation({ summary: 'Удалить один филиал' })
-  @Delete()
+  @Delete(':id')
   async deleteBranch(@Param('id') id: number) {
     return await this.branchService.deleteOne(id);
   }
