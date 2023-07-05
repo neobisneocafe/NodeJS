@@ -4,11 +4,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ImageModule } from './modules/image/image.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BranchModule } from './modules/branch/branch.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
     ImageModule,
     AuthModule,
+    UserModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
