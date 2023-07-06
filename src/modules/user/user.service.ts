@@ -4,7 +4,6 @@ import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BadRequestException, Injectable } from '@nestjs/common';
-// import { SearchUserDto } from './dto/search-user.dto';
 import { ListParamsDto } from 'src/base/dto/list-params.dto';
 import { ListDto } from 'src/base/dto/list.dto';
 import { UpdateUserDto } from './dto/update-user.dto';

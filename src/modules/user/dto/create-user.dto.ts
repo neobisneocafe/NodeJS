@@ -1,12 +1,5 @@
 import { BaseDto } from 'src/base/dto/base.dto.';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsPhoneNumberDecorator } from 'src/utils/decorators/is-phone-number.decorator';
 
