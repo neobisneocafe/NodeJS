@@ -1,12 +1,5 @@
 import { BaseEntity } from 'src/base/base.entity';
 import { Column, Entity } from 'typeorm';
-import {
-  IsDate,
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
 import { UserRoleEnum } from '../enums/user.role.enum';
 
 @Entity()
@@ -14,22 +7,16 @@ export class User extends BaseEntity {
   @Column({
     unique: true,
   })
-  @IsString()
-  @IsNotEmpty()
   phoneNumber: string;
 
   @Column({
     nullable: true,
   })
-  @IsString()
-  @IsNotEmpty()
   firstName: string;
 
   @Column({
     nullable: true,
   })
-  @IsDate()
-  @IsOptional()
   dateOfBirth: Date;
 
   @Column({
@@ -55,6 +42,11 @@ export class User extends BaseEntity {
     nullable: true,
   })
   refresh_token: string;
+
+  @Column({
+    nullable: true,
+  })
+  login_code: string;
 
   // @Column({ nullable: true })
   // refresh_token_expires: Date;

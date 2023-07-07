@@ -4,9 +4,9 @@ import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { SearchUserDto } from './dto/search-user.dto';
 import { ListParamsDto } from 'src/base/dto/list-params.dto';
 import { ListDto } from 'src/base/dto/list.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService extends BaseService<User> {
@@ -47,12 +47,10 @@ export class UserService extends BaseService<User> {
     throw new BadRequestException('Confirmation error');
   }
 
-  async checkIfUserExists(searchUserDto: SearchUserDto) {
+  async checkIfUserExists(phoneNumber: string) {
     const user = await this.userRepository
       .createQueryBuilder('user')
-      .where('user.phoneNumber = :phoneNumber', {
-        phoneNumber: searchUserDto.phoneNumber,
-      })
+      .where('user.phoneNumber = :phoneNumber', { phoneNumber })
       .getOne();
 
     if (!user) {
@@ -99,5 +97,20 @@ export class UserService extends BaseService<User> {
       throw new BadRequestException('User not found!');
     }
     return user;
+  }
+
+  async updateUsersProfile(id: number, updateDto: UpdateUserDto) {
+    const { phoneNumber, dateOfBirth } = updateDto;
+    const user = await this.get(id);
+    if (phoneNumber) {
+      const isPhoneNumberExists = await this.findOne(phoneNumber);
+      if (isPhoneNumberExists) {
+        throw new BadRequestException(
+          `Phone number ${phoneNumber} is used by other user!`,
+        );
+      }
+      user.absorbFromDto(updateDto);
+      return this.userRepository.save(user);
+    }
   }
 }

@@ -1,49 +1,77 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ConfirmAccountDto } from './dto/confirm-account.dto';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 
-@ApiTags('Aвторизация')
+@ApiTags('Авторизация')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @ApiOperation({ summary: 'Создать аккаунт' })
-  @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
+  @ApiOperation({ summary: 'Регистрация пользователя' })
+  @Post('signup')
+  async signup(@Body() createUserDto: CreateUserDto) {
+    return this.authService.signup(createUserDto);
   }
 
-  @ApiOperation({ summary: 'Найти всех пользователей' })
-  @Get()
-  findAll() {
-    return this.authService.findAll();
+  @Post('confirm')
+  @ApiOperation({ summary: 'Активировать аккаунт' })
+  async confirm(@Body() confirmAccountDto: ConfirmAccountDto) {
+    return this.authService.confirm(confirmAccountDto);
   }
 
-  @ApiOperation({ summary: 'Найти одного пользователя' })
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
+  @Post('login/send-verification-code')
+  @ApiOperation({ summary: 'Отправить код на номер телефона' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        phoneNumber: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  async sendVerificationCode(
+    @Body('phoneNumber') phoneNumber: string,
+  ): Promise<void> {
+    await this.authService.sendVerifyCode(phoneNumber);
   }
 
-  @ApiOperation({ summary: 'Изменить одного пользователя' })
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
+  @Post('login/verify')
+  @ApiOperation({ summary: 'Подтвердить код отправленный на номер телефона' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        verificationCode: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  async verifyCode(
+    @Body('verificationCode') verificationCode: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const result = await this.authService.verifyCode(verificationCode);
+    return result;
   }
 
-  @ApiOperation({ summary: 'Удалить одного пользователя' })
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
+  @Post('/refresh')
+  @ApiOperation({ summary: 'Обновить access токен' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        refresh_token: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  async refreshToken(@Body('refresh_token') refresh_token: string) {
+    const token = await this.authService.refreshAccessToken(refresh_token);
+    return token;
   }
 }
