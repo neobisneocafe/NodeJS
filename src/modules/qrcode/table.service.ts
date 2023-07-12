@@ -7,6 +7,8 @@ import * as qrcode from 'qrcode';
 import { Repository } from 'typeorm';
 import { BranchEntity } from '../branch/entities/branch.entity';
 import { BookTableDto } from './dto/book_table.dto';
+import { UserService } from '../user/user.service';
+import { ReleaseTableDto } from './dto/release_table.dto';
 
 @Injectable()
 export class TableService extends BaseService<TableEntity> {
@@ -15,6 +17,7 @@ export class TableService extends BaseService<TableEntity> {
     private readonly tableRepo: Repository<TableEntity>,
     @InjectRepository(BranchEntity)
     private readonly branchRepo: Repository<BranchEntity>,
+    private readonly userService: UserService,
   ) {
     super(tableRepo);
   }
@@ -37,26 +40,49 @@ export class TableService extends BaseService<TableEntity> {
     return await this.tableRepo.save(table);
   }
 
-  async bookOne(bookTableDto: BookTableDto) {
-    const { branchId, uniqueCode } = bookTableDto;
+  async bookTable(userId: number, bookTableDto: BookTableDto) {
+    const { uniqueCode, branchId } = bookTableDto;
+    const user = await this.userService.getProfile(userId);
     const table = await this.tableRepo.findOne({
-      where: { uniqueCode: uniqueCode },
+      where: { uniqueCode: uniqueCode, branch: { id: branchId } },
       relations: ['branch'],
     });
-    const branch = await this.branchRepo.findOne({
-      where: { id: branchId },
-      relations: ['tables'],
+    // console.log(user);
+    await this.checkIfExcist(user);
+    await this.checkIfExcist(table);
+    if (user.table[0]) {
+      throw new BadRequestException('У вас есть забронированный столик');
+    }
+    if (!user.table[0] && !table.isBooked) {
+      table.isBooked = true;
+      user.table.push(table);
+      await this.tableRepo.save(table);
+      await this.userService.save(user);
+      return user;
+    }
+    return null;
+  }
+
+  async releaseTable(userId: number, releaseTable: ReleaseTableDto) {
+    const table = await this.tableRepo.findOne({
+      where: { id: releaseTable.tableId },
     });
-    if (!table) {
-      throw new BadRequestException('Столик не найден');
+    const user = await this.userService.getProfile(userId);
+    await this.checkIfExcist(user);
+    await this.checkIfExcist(table);
+    if (table === user.table[0] || table.isBooked) {
+      table.isBooked = false;
+      user.table = [];
+      await this.userService.save(user);
+      await this.tableRepo.save(table);
+      return user;
     }
-    if (!branch) {
-      throw new BadRequestException('Филиала с таким id нет');
-    }
-    if (table.branch.id != branch.id) {
-      throw new BadRequestException('Такого столика нет в это филиале');
-    }
-    return 'Столик забронирован';
+    return user;
+  }
+
+  async getMyTable(userId: number) {
+    const user = await this.userService.getProfile(userId);
+    return user.table;
   }
 
   async listAllBranchTables(id: number) {
@@ -68,6 +94,12 @@ export class TableService extends BaseService<TableEntity> {
       throw new BadRequestException('Филиала с таким id не найдено');
     }
     return branch.tables;
+  }
+
+  private async checkIfExcist(obj: any) {
+    if (!obj) {
+      throw new BadRequestException(`Объект ${obj} не найден`);
+    }
   }
 
   private async generateRandomString() {
@@ -102,10 +134,6 @@ export class TableService extends BaseService<TableEntity> {
     if (!branch) {
       throw new BadRequestException('Филиала с таким id не найдено');
     }
-    const ifExcists = await this.tableRepo.find({
-      where: { name: data.name },
-      relations: ['branch'],
-    });
     for (let i = 0; i < branch.tables.length; i++) {
       if (branch.tables[i].name === data.name) {
         throw new BadRequestException(
