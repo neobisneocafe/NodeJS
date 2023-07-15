@@ -19,6 +19,9 @@ export class UserService extends BaseService<User> {
   async findOne(phoneNumber: string) {
     return await this.userRepository.findOneBy({ phoneNumber });
   }
+  async save(user) {
+    return await this.userRepository.save(user);
+  }
 
   async create(createUserDto: CreateUserDto) {
     const userExists = await this.findOne(createUserDto.phoneNumber);
@@ -92,7 +95,10 @@ export class UserService extends BaseService<User> {
   }
 
   async getProfile(id: number): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['table'],
+    });
     if (!user) {
       throw new BadRequestException('User not found!');
     }

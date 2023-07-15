@@ -1,6 +1,7 @@
 import { BaseEntity } from 'src/base/base.entity';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { UserRoleEnum } from '../enums/user.role.enum';
+import { TableEntity } from 'src/modules/qrcode/entities/table.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -47,6 +48,10 @@ export class User extends BaseEntity {
     nullable: true,
   })
   login_code: string;
+
+  @OneToMany(() => TableEntity, (table) => table.user, { cascade: true })
+  @JoinColumn()
+  table: TableEntity[];
 
   // @Column({ nullable: true })
   // refresh_token_expires: Date;
