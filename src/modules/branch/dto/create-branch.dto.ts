@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsEmail, IsNotEmpty, IsString, IsUrl } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, IsUrl } from 'class-validator';
 export class CreateBranchDto {
   @ApiProperty({ example: 'Имя филиала' })
   @IsNotEmpty()

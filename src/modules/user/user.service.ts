@@ -4,7 +4,6 @@ import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BadRequestException, Injectable } from '@nestjs/common';
-// import { SearchUserDto } from './dto/search-user.dto';
 import { ListParamsDto } from 'src/base/dto/list-params.dto';
 import { ListDto } from 'src/base/dto/list.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -19,6 +18,9 @@ export class UserService extends BaseService<User> {
   }
   async findOne(phoneNumber: string) {
     return await this.userRepository.findOneBy({ phoneNumber });
+  }
+  async save(user) {
+    return await this.userRepository.save(user);
   }
 
   async create(createUserDto: CreateUserDto) {
@@ -93,7 +95,10 @@ export class UserService extends BaseService<User> {
   }
 
   async getProfile(id: number): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['table'],
+    });
     if (!user) {
       throw new BadRequestException('User not found!');
     }

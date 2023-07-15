@@ -12,7 +12,6 @@ import { ConfigService } from '@nestjs/config';
 import { ConfirmCode } from './entities/auth.entity';
 import { JwtPayload } from 'jsonwebtoken';
 import { SmsNikitaService } from 'src/services/sms-nikita.ts/sms-nikita.service';
-// import { LoginDto } from './dto/login.dto';
 import { ConfrimCodeDto } from './dto/confrim-code.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { ConfirmAccountDto } from './dto/confirm-account.dto';

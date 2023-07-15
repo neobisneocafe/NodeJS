@@ -1,22 +1,8 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Res,
-  Req,
-  Session,
-  HttpStatus,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ConfirmAccountDto } from './dto/confirm-account.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
-import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Авторизация')
 @Controller('auth')
