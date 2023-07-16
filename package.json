@@ -22,7 +22,6 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@nestjs/websockets": "^9.4.3",
     "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/bull": "^0.6.3",
     "@nestjs/common": "^9.4.3",
@@ -32,10 +31,11 @@
     "@nestjs/mapped-types": "^1.2.2",
     "@nestjs/passport": "^9.0.3",
     "@nestjs/platform-express": "^9.4.3",
+    "@nestjs/platform-socket.io": "^9.4.3",
     "@nestjs/swagger": "^6.3.0",
     "@nestjs/typeorm": "^9.0.1",
+    "@nestjs/websockets": "^9.4.3",
     "@types/multer": "^1.4.7",
-    "@nestjs/platform-socket.io": "^9.4.3",
     "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
     "bull": "^4.10.4",
