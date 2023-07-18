@@ -15,10 +15,25 @@ export class AuthController {
     return this.authService.signup(createUserDto);
   }
 
+  // @Post('confirm')
+  // @ApiOperation({ summary: 'Активировать аккаунт' })
+  // async confirm(@Body() confirmAccountDto: ConfirmAccountDto) {
+  //   return this.authService.confirm(confirmAccountDto);
+  // }
+
   @Post('confirm')
-  @ApiOperation({ summary: 'Активировать аккаунт' })
-  async confirm(@Body() confirmAccountDto: ConfirmAccountDto) {
-    return this.authService.confirm(confirmAccountDto);
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        codeToConfirm: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  async confirm(@Body('codeToConfirm') codeToConfirm: string) {
+    return await this.authService.confirmAccount(codeToConfirm);
   }
 
   @Post('login/send-verification-code')
