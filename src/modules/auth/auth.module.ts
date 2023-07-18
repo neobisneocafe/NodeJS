@@ -20,7 +20,7 @@ import { PassportModule } from '@nestjs/passport';
     SmsNikitaModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '30m' },
+      signOptions: { expiresIn: '1d' },
     }),
   ],
   controllers: [AuthController],

@@ -47,6 +47,11 @@ export class User extends BaseEntity {
   @Column({
     nullable: true,
   })
+  confirm_code: string;
+
+  @Column({
+    nullable: true,
+  })
   login_code: string;
 
   @OneToMany(() => TableEntity, (table) => table.user, { cascade: true })
