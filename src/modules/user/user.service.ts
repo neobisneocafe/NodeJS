@@ -16,6 +16,11 @@ export class UserService extends BaseService<User> {
   ) {
     super(userRepository);
   }
+  async findOneByConfirmCode(confirmCode: string): Promise<User | null> {
+    return this.userRepository.findOneBy({confirm_code:confirmCode})
+  }
+  
+
   async findOne(phoneNumber: string) {
     return await this.userRepository.findOneBy({ phoneNumber });
   }
@@ -23,23 +28,41 @@ export class UserService extends BaseService<User> {
     return await this.userRepository.save(user);
   }
 
+  // async create(createUserDto: CreateUserDto) {
+  //   const userExists = await this.findOne(createUserDto.phoneNumber);
+
+  //   if (userExists && userExists.confirmed) {
+  //     throw new BadRequestException('User already exists');
+  //   }
+
+  //   if (userExists && !userExists.confirmed) {
+  //     await this.userRepository.remove(userExists);
+  //   }
+
+  //   const user = new User();
+  //   user.phoneNumber = createUserDto.phoneNumber;
+  //   user.firstName = createUserDto.firstName;
+
+  //   return this.userRepository.save(user);
+  // }
+
   async create(createUserDto: CreateUserDto) {
     const userExists = await this.findOne(createUserDto.phoneNumber);
-
-    if (userExists && userExists.confirmed) {
-      throw new BadRequestException('User already exists');
+  
+    if (userExists) {
+      if (userExists.confirmed) {
+        throw new BadRequestException('User already exists');
+      } else {
+        await this.userRepository.remove(userExists);
+      }
     }
-
-    if (userExists && !userExists.confirmed) {
-      await this.userRepository.remove(userExists);
-    }
-
+  
     const user = new User();
-    user.phoneNumber = createUserDto.phoneNumber;
-    user.firstName = createUserDto.firstName;
-
+    user.absorbFromDto(createUserDto)
+  
     return this.userRepository.save(user);
   }
+  
 
   async activateUser(id: number) {
     const user: User = await this.get(id);
