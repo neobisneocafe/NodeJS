@@ -1,5 +1,5 @@
 import { BaseEntity } from 'src/base/base.entity';
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany} from 'typeorm';
 import { UserRoleEnum } from '../enums/user.role.enum';
 import { TableEntity } from 'src/modules/qrcode/entities/table.entity';
 
