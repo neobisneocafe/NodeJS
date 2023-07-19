@@ -11,10 +11,11 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { ConfirmCode } from './entities/auth.entity';
 import { SmsNikitaModule } from '../../services/sms-nikita.ts/sms-nikita.module';
 import { PassportModule } from '@nestjs/passport';
+import { Admin } from './entities/admins.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, ConfirmCode]),
+    TypeOrmModule.forFeature([User, ConfirmCode, Admin]),
     UserModule,
     PassportModule,
     SmsNikitaModule,
