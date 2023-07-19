@@ -57,178 +57,34 @@ export class AuthService {
     return user;
   }
 
-
-  // async signup(createUserDto: CreateUserDto) {
-  //   const { phoneNumber } = createUserDto;
-  
-  //   if (await this.userService.checkIfUserExists(phoneNumber)) {
-  //     throw new BadRequestException('User already exists');
-  //   }
-  
-  //   const codeToConfirm = Math.random().toString().substr(2, 4);
-  //   const newUser = await this.userService.create(createUserDto);
-  
-  //   this.smsNikitaService.sendSms(phoneNumber, codeToConfirm);
-  
-  //   return newUser;
-  // }
-
   async signup(createUserDto: CreateUserDto) {
     const { phoneNumber } = createUserDto;
-  
+
     if (await this.userService.checkIfUserExists(phoneNumber)) {
       throw new BadRequestException('User already exists');
     }
-  
+
     const codeToConfirm = Math.random().toString().substr(2, 4);
     const newUser = await this.userService.create(createUserDto);
-  
+
     this.smsNikitaService.sendSms(phoneNumber, codeToConfirm);
-    newUser.confirm_code = codeToConfirm
-    await this.userRepository.save(newUser)
+    newUser.confirm_code = codeToConfirm;
+    await this.userRepository.save(newUser);
     return newUser;
   }
-  
-  
 
-// async confirm(codeToConfirm: string) {
-//   const account = await this.userService.findOneByConfirmCode(codeToConfirm);
-
-//   if (!account) {
-//     throw new BadRequestException('Incorrect credentials');
-//   }
-
-//   const currentTime = Date.now();
-//   const createdAt = account.createdAt.getTime();
-//   const timeDifference = (currentTime - createdAt) / (1000 * 60); // Разница в минутах
-//   const tenMinutes = 10;
-//   if (timeDifference > tenMinutes) {
-//     throw new BadRequestException('Code has expired. Please send a new code within 10 minutes.');
-//   }
-
-//   await this.userService.activateUser(account.id);
-
-//   const payload = this.createPayload(account);
-//   const access_token = this.jwtService.sign(payload);
-
-//   return {
-//     access_token,
-//   };
-// }
-
-async confirmAccount(codeToConfirm:string){
-  const account = await this.userRepository.findOne({where:{confirm_code:codeToConfirm}})
-  if(!account){
-    throw new BadRequestException('NOT FOUND!')
+  async confirmAccount(codeToConfirm: string) {
+    const account = await this.userRepository.findOne({
+      where: { confirm_code: codeToConfirm },
+    });
+    if (!account) {
+      throw new BadRequestException('NOT FOUND!');
+    }
+    await this.userService.activateUser(account.id);
+    const payload = this.createPayload(account);
+    const accessToken = this.jwtService.sign(payload);
+    return { accessToken };
   }
-  await this.userService.activateUser(account.id)
-  const payload = this.createPayload(account)
-  const accessToken = this.jwtService.sign(payload)
-  return {accessToken}
-}
-
-
-  // async signup(createUserDto: CreateUserDto) {
-  //   const { phoneNumber } = createUserDto;
-
-  //   if (await this.userService.checkIfUserExists(phoneNumber)) {
-  //     throw new BadRequestException('User already exists');
-  //   }
-  //   const codeToConfirm = Math.random().toString().substr(2, 4);
-  //   const confirmCode = {
-  //     phoneNumber,
-  //     code: codeToConfirm,
-  //   };
-  //   await this.saveConfirmCode(confirmCode);
-  //   this.smsNikitaService.sendSms(phoneNumber, codeToConfirm);
-  //   const newUser = await this.userService.create(createUserDto);
-  //   return newUser;
-  // }
-
-  // async saveConfirmCode(confirmCodeDto: ConfrimCodeDto) {
-  //   const existingCode = await this.confirmCodesRepository.findOneBy({
-  //     phoneNumber: confirmCodeDto.phoneNumber,
-  //   });
-  //   if (existingCode) {
-  //     await this.confirmCodesRepository.remove(existingCode);
-  //   }
-  //   const newCode = new ConfirmCode();
-  //   newCode.phoneNumber = confirmCodeDto.phoneNumber;
-  //   newCode.code = confirmCodeDto.code;
-  //   return this.confirmCodesRepository.save(newCode);
-  // }
-
-
-// async confirm(codeToConfirm: string) {
-//   const sentAccount = await this.confirmCodesRepository.findOne({
-//     where: {
-//       code: codeToConfirm,
-//     },
-//   });
-
-//   if (!sentAccount) {
-//     throw new BadRequestException('Incorrect credentials');
-//   }
-
-//   const currentTime = Date.now();
-//   const createdAt = sentAccount.createdAt.getTime();
-//   const timeDifference = (currentTime - createdAt) / (1000 * 60); // Разница в минутах
-//   const tenMinutes = 10;
-//   if (timeDifference > tenMinutes) {
-//     await this.confirmCodesRepository.remove(sentAccount);
-//     throw new BadRequestException('Code has expired. Please send a new code within 10 minutes.');
-//   }
-
-//   const account = await this.userService.findOne(sentAccount.phoneNumber);
-
-//   await this.confirmCodesRepository.remove(sentAccount);
-//   await this.userService.activateUser(account.id);
-
-//   const payload = this.createPayload(account);
-//   const access_token = this.jwtService.sign(payload);
-
-//   return {
-//     access_token,
-//   };
-// }
-
-
-  // async confirm(confirmAccountDto: ConfirmAccountDto) {
-  //   const { code, phoneNumber } = confirmAccountDto;
-
-  //   const sentAccount = await this.confirmCodesRepository.findOne({
-  //     where: {
-  //       phoneNumber,
-  //     },
-  //   });
-
-  //   if (!sentAccount || code !== sentAccount.code) {
-  //     throw new BadRequestException('Incorrect credentials');
-  //   }
-
-  //   const currentTime = Date.now();
-  //   const createdAt = sentAccount.createdAt.getTime();
-  //   const timeDifference = (currentTime - createdAt) / (1000 * 60); // Разница в минутах
-  //   const tenMinutes = 10;
-  //   if (timeDifference > tenMinutes) {
-  //     await this.confirmCodesRepository.remove(sentAccount);
-  //     throw new BadRequestException(
-  //       'Code has expired. Please send a new code within 10 minutes.',
-  //     );
-  //   }
-
-  //   const account = await this.userService.findOne(phoneNumber);
-
-  //   await this.confirmCodesRepository.remove(sentAccount);
-  //   await this.userService.activateUser(account.id);
-
-  //   const payload = this.createPayload(account);
-  //   const access_token = this.jwtService.sign(payload);
-
-  //   return {
-  //     access_token,
-  //   };
-  // }
 
   private async sendConfirmationCode(phoneNumber: string): Promise<any> {
     //тут был void

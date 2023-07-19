@@ -23,19 +23,18 @@ export class AuthController {
 
   @Post('confirm')
   @ApiBody({
-    schema:{
-      type:'object',
-      properties:{
-        codeToConfirm:{
-          type:'string'
-        }
-      }
-    }
+    schema: {
+      type: 'object',
+      properties: {
+        codeToConfirm: {
+          type: 'string',
+        },
+      },
+    },
   })
-  async confirm(@Body('codeToConfirm') codeToConfirm: string){
-    return await this.authService.confirmAccount(codeToConfirm)
+  async confirm(@Body('codeToConfirm') codeToConfirm: string) {
+    return await this.authService.confirmAccount(codeToConfirm);
   }
-
 
   @Post('login/send-verification-code')
   @ApiOperation({ summary: 'Отправить код на номер телефона' })

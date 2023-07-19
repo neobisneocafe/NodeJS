@@ -45,9 +45,9 @@ export class User extends BaseEntity {
   refresh_token: string;
 
   @Column({
-    nullable:true
+    nullable: true,
   })
-  confirm_code: string; 
+  confirm_code: string;
 
   @Column({
     nullable: true,

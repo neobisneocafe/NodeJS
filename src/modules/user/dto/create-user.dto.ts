@@ -20,5 +20,5 @@ export class CreateUserDto extends BaseDto {
   @IsNotEmpty()
   phoneNumber: string;
 
-  condirm_code:string
+  condirm_code: string;
 }

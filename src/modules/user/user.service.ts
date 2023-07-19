@@ -17,9 +17,8 @@ export class UserService extends BaseService<User> {
     super(userRepository);
   }
   async findOneByConfirmCode(confirmCode: string): Promise<User | null> {
-    return this.userRepository.findOneBy({confirm_code:confirmCode})
+    return this.userRepository.findOneBy({ confirm_code: confirmCode });
   }
-  
 
   async findOne(phoneNumber: string) {
     return await this.userRepository.findOneBy({ phoneNumber });
@@ -48,7 +47,7 @@ export class UserService extends BaseService<User> {
 
   async create(createUserDto: CreateUserDto) {
     const userExists = await this.findOne(createUserDto.phoneNumber);
-  
+
     if (userExists) {
       if (userExists.confirmed) {
         throw new BadRequestException('User already exists');
@@ -56,13 +55,12 @@ export class UserService extends BaseService<User> {
         await this.userRepository.remove(userExists);
       }
     }
-  
+
     const user = new User();
-    user.absorbFromDto(createUserDto)
-  
+    user.absorbFromDto(createUserDto);
+
     return this.userRepository.save(user);
   }
-  
 
   async activateUser(id: number) {
     const user: User = await this.get(id);
