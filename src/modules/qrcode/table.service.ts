@@ -48,8 +48,8 @@ export class TableService extends BaseService<TableEntity> {
       relations: ['branch'],
     });
     // console.log(user);
-    await this.checkIfExcist(user);
-    await this.checkIfExcist(table);
+    await this.checkIfExcist(user, 'user');
+    await this.checkIfExcist(table, 'table');
     if (user.table[0]) {
       throw new BadRequestException('У вас есть забронированный столик');
     }
@@ -68,8 +68,8 @@ export class TableService extends BaseService<TableEntity> {
       where: { id: releaseTable.tableId },
     });
     const user = await this.userService.getProfile(userId);
-    await this.checkIfExcist(user);
-    await this.checkIfExcist(table);
+    await this.checkIfExcist(user, 'user');
+    await this.checkIfExcist(table, 'table');
     if (table === user.table[0] || table.isBooked) {
       table.isBooked = false;
       user.table = [];
@@ -90,16 +90,8 @@ export class TableService extends BaseService<TableEntity> {
       where: { id: id },
       relations: ['tables'],
     });
-    if (!branch) {
-      throw new BadRequestException('Филиала с таким id не найдено');
-    }
+    await this.checkIfExcist(branch, 'branch');
     return branch.tables;
-  }
-
-  private async checkIfExcist(obj: any) {
-    if (!obj) {
-      throw new BadRequestException(`Объект ${obj} не найден`);
-    }
   }
 
   private async generateRandomString() {
@@ -131,9 +123,7 @@ export class TableService extends BaseService<TableEntity> {
       where: { id: data.branchId },
       relations: ['tables'],
     });
-    if (!branch) {
-      throw new BadRequestException('Филиала с таким id не найдено');
-    }
+    await this.checkIfExcist(branch, 'branch');
     for (let i = 0; i < branch.tables.length; i++) {
       if (branch.tables[i].name === data.name) {
         throw new BadRequestException(

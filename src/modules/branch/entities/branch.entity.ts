@@ -28,6 +28,9 @@ export class BranchEntity extends BaseEntity {
   @Column()
   locationUrl: string;
 
+  @Column()
+  imageUrl: string;
+
   @OneToMany(() => TableEntity, (table) => table.branch, { cascade: true })
   tables: TableEntity[];
 }
