@@ -14,7 +14,7 @@ export class CreateBranchDto extends BaseDto {
   name: string;
 
   @ApiProperty({ example: 'Имя менеджера' })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   managerName: string;
 
@@ -24,12 +24,12 @@ export class CreateBranchDto extends BaseDto {
   adress: string;
 
   @ApiProperty({ example: 'Город' })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   city: string;
 
   @ApiProperty({ example: 'neocafe2023@gmail.com' })
-  @IsNotEmpty()
+  @IsOptional()
   @IsEmail()
   email: string;
 
@@ -47,7 +47,7 @@ export class CreateBranchDto extends BaseDto {
   locationUrl: string;
 
   @ApiProperty()
-  @IsOptional()
+  @IsNotEmpty()
   @IsUrl()
   imageUrl: string;
 }
