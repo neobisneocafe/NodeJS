@@ -2,6 +2,7 @@ import { Brackets, ObjectLiteral, Repository } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { ListParamsDto } from './dto/list-params.dto';
 import { ListDto } from './dto/list.dto';
+import { BadRequestException } from '@nestjs/common';
 
 export abstract class BaseService<T extends BaseEntity> {
   repository: Repository<T>;
@@ -109,5 +110,11 @@ export abstract class BaseService<T extends BaseEntity> {
 
   deleteBy(where: string | ObjectLiteral | Brackets) {
     return this.repository.createQueryBuilder().where(where).delete();
+  }
+
+  async checkIfExcist(obj: any, name: string) {
+    if (!obj) {
+      throw new BadRequestException(`Поле ${name} не найдено`);
+    }
   }
 }

@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString, IsUrl } from 'class-validator';
-export class CreateBranchDto {
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUrl,
+} from 'class-validator';
+import { BaseDto } from 'src/base/dto/base.dto.';
+export class CreateBranchDto extends BaseDto {
   @ApiProperty({ example: 'Имя филиала' })
   @IsNotEmpty()
   @IsString()
@@ -35,7 +42,12 @@ export class CreateBranchDto {
   closing_time: Date;
 
   @ApiProperty({ example: 'https://2gis.kg/bishkek/geo/70000001019343641' })
-  @IsNotEmpty()
+  @IsOptional()
   @IsUrl()
   locationUrl: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsUrl()
+  imageUrl: string;
 }
