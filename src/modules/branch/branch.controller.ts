@@ -43,10 +43,18 @@ export class BranchController {
       type: 'object',
       properties: {
         name: { type: 'string', example: 'Имя Фамилия' },
-        managerName: { type: 'string', example: 'ФИО менеджера' },
+        managerName: {
+          type: 'string',
+          example: 'ФИО менеджера',
+          nullable: true,
+        },
         adress: { type: 'string', example: 'Адрес текстом' },
-        city: { type: 'string', example: 'Бишкек' },
-        email: { type: 'string', example: 'neocafe2023@gmail.com' },
+        city: { type: 'string', example: 'Бишкек', nullable: true },
+        email: {
+          type: 'string',
+          example: 'neocafe2023@gmail.com',
+          nullable: true,
+        },
         opening_time: { type: 'string', example: '2023-03-22T10:30:40.000Z' },
         closing_time: { type: 'string', example: '2023-03-22T10:30:40.000Z' },
         locationUrl: {
@@ -57,7 +65,6 @@ export class BranchController {
         image: {
           type: 'string',
           format: 'binary',
-          nullable: true,
         },
       },
     },
