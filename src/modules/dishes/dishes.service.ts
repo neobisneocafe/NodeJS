@@ -7,6 +7,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from '../category/entities/category.entity';
 import { ImageService } from '../image/image.service';
+import { ListParamsDto } from 'src/base/dto/list-params.dto';
+import { ListDto } from 'src/base/dto/list.dto';
 
 @Injectable()
 export class DishesService extends BaseService<Dish> {
@@ -37,5 +39,32 @@ export class DishesService extends BaseService<Dish> {
     dish.category = category;
     await this.dishRepo.save(dish);
     return dish;
+  }
+
+  async findOneDish(id: number) {
+    return await this.dishRepo.findOne({
+      where:{id},
+      relations:['category','image']
+    })
+  }
+
+  async listsDishes(listParamsDTo:ListParamsDto){
+    const array = await this.dishRepo.createQueryBuilder('dish')
+    .leftJoinAndSelect('dish.image','image')
+    .leftJoinAndSelect('dish.category','category')
+    .where('dish.isDeleted != true')
+    .limit(listParamsDTo.limit)
+    .offset(listParamsDTo.countOffset())
+    .orderBy(`
+    dish.${listParamsDTo.getOrderedField()}`,listParamsDTo.order)
+    .getMany()
+    const itemsCount = await this.repository.createQueryBuilder().getCount()
+    return new ListDto(array,{
+      page:listParamsDTo.page,
+      itemsCount,
+      limit:listParamsDTo.limit,
+      order:listParamsDTo.order,
+      orderField:listParamsDTo.orderField
+    })
   }
 }

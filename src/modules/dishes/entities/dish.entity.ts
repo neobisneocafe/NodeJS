@@ -20,4 +20,10 @@ export class Dish extends BaseEntity {
 
   @ManyToOne(() => Category, (category) => category.dish)
   category: Category;
+
+  @Column({
+    type:'boolean',
+    default: false
+  })
+  isDeleted: boolean
 }
