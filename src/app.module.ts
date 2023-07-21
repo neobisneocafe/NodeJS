@@ -7,6 +7,7 @@ import { BranchModule } from './modules/branch/branch.module';
 import { UserModule } from './modules/user/user.module';
 import { QrcodeModule } from './modules/qrcode/qrcode.module';
 import { CategoryModule } from './modules/category/category.module';
+import { DishesModule } from './modules/dishes/dishes.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { CategoryModule } from './modules/category/category.module';
       }),
       inject: [ConfigService],
     }),
+    DishesModule,
     BranchModule,
     QrcodeModule,
   ],
