@@ -101,7 +101,6 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Получить профиль администратора' })
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Get admin data' })
   async getAdminData(@Req() req) {
     return this.authService.getAdminProfile(req?.admin?.id);
   }
