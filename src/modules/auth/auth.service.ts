@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   UnauthorizedException,
+  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/entities/user.entity';
@@ -16,6 +17,10 @@ import { ConfrimCodeDto } from './dto/confrim-code.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { ConfirmAccountDto } from './dto/confirm-account.dto';
 import { randomBytes } from 'crypto';
+import { Admin } from './entities/admins.entity';
+import { LoginAdminDto } from './dto/admin.dto';
+import { ListParamsDto } from 'src/base/dto/list-params.dto';
+import { ListDto } from 'src/base/dto/list.dto';
 
 @Injectable()
 export class AuthService {
@@ -28,6 +33,8 @@ export class AuthService {
     @InjectRepository(ConfirmCode)
     private readonly confirmCodesRepository: Repository<ConfirmCode>,
     private readonly smsNikitaService: SmsNikitaService,
+    @InjectRepository(Admin)
+    private readonly adminRepo: Repository<Admin>,
   ) {}
 
   private createPayload(user: User): JwtPayload {
@@ -166,11 +173,11 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  private generateAccessToken(payload: JwtPayload): string {
+  generateAccessToken(payload: JwtPayload): string {
     return this.jwtService.sign(payload);
   }
 
-  private generateRefreshToken(): string {
+  generateRefreshToken(): string {
     const validityPeriod = 30 * 24 * 60 * 60 * 1000; // 30 days in millis
     const expirationDate = Date.now() + validityPeriod;
     const token =
@@ -182,7 +189,10 @@ export class AuthService {
     const user = await this.userRepository.findOne({
       where: { refresh_token: refresh_token },
     });
-    if (!user) {
+    const admin = await this.adminRepo.findOne({
+      where: { refresh_token: refresh_token },
+    });
+    if (!user || !admin) {
       throw new UnauthorizedException('Refresh token is invalid');
     }
     const payload = await this.createPayload(user);
@@ -190,5 +200,107 @@ export class AuthService {
     return {
       access_token,
     };
+  }
+
+  async refreshAccessTokens(refresh_token: string) {
+    const user = await this.userRepository.findOne({
+      where: { refresh_token },
+    });
+    const admin = await this.adminRepo.findOne({ where: { refresh_token } });
+
+    if (!user && !admin) {
+      throw new UnauthorizedException('Refresh token is invalid');
+    }
+
+    let payload;
+    if (user) {
+      payload = await this.createPayload(user); // Для пользователя
+    } else {
+      payload = await this.createAdminPayload(admin); // Для администратора
+    }
+
+    const access_token = this.jwtService.sign(payload);
+    return { access_token };
+  }
+
+  private createAdminPayload(admin: Admin): any {
+    return {
+      id: admin.id,
+      username: admin.username,
+      role: 'admin',
+    };
+  }
+
+  async create(loginDto: LoginAdminDto): Promise<Admin> {
+    const adminExists = await this.adminRepo.findOne({
+      where: { hasAdmin: true },
+    });
+    if (adminExists) {
+      throw new ConflictException('Admin is already exists');
+    }
+    const admin = new Admin();
+    // loginDto.password = Hash.make(loginDto.password);
+    admin.absorbFromDto(loginDto);
+    return this.adminRepo.save(admin);
+  }
+
+  async findAdminByUsername(username: string) {
+    const findOnebyUsername = await this.adminRepo.findOne({
+      where: { username },
+    });
+    return findOnebyUsername;
+  }
+
+  async login(login: LoginAdminDto) {
+    const admin = await this.adminRepo.findOne({
+      where: { username: login.username },
+    });
+    if (!admin) {
+      throw new UnauthorizedException();
+    }
+    const payload = this.createAdminPayload(admin);
+    const refreshToken = this.generateRefreshToken();
+    admin.refresh_token = refreshToken;
+    admin.hasAdmin = true;
+    await this.adminRepo.save(admin);
+    return {
+      access_token: this.generateAccessToken(payload),
+      refreshToken,
+    };
+  }
+
+  async getAdminProfile(id: number): Promise<Admin> {
+    const admin = await this.adminRepo.findOne({
+      where: { id: id },
+    });
+    if (!admin) {
+      throw new BadRequestException('NOT FOUND!');
+    }
+    return admin;
+  }
+
+  async listBySelect(listParamsDto: ListParamsDto) {
+    const queryBuilder = this.adminRepo
+      .createQueryBuilder('admin')
+      .select([
+        'admin.id',
+        'admin.createdAt',
+        'admin.updatedAt',
+        'admin.username',
+        'admin.hasAdmin',
+        'admin.refresh_token',
+      ])
+      .limit(listParamsDto.limit)
+      .offset(listParamsDto.countOffset())
+      .orderBy(listParamsDto.getOrderedField(), listParamsDto.order);
+
+    const [data, itemsCount] = await queryBuilder.getManyAndCount();
+    return new ListDto(data, {
+      page: listParamsDto.page,
+      itemsCount,
+      limit: listParamsDto.limit,
+      order: listParamsDto.order,
+      orderField: listParamsDto.orderField,
+    });
   }
 }

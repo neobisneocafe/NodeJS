@@ -1,8 +1,19 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseGuards,
+  Req,
+  Query,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ConfirmAccountDto } from './dto/confirm-account.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
+import { LoginAdminDto } from './dto/admin.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { ListParamsDto } from 'src/base/dto/list-params.dto';
 
 @ApiTags('Авторизация')
 @Controller('auth')
@@ -71,7 +82,33 @@ export class AuthController {
     },
   })
   async refreshToken(@Body('refresh_token') refresh_token: string) {
-    const token = await this.authService.refreshAccessToken(refresh_token);
+    const token = await this.authService.refreshAccessTokens(refresh_token);
     return token;
+  }
+
+  @ApiTags()
+  @Post('/login/admin')
+  @ApiOperation({ summary: 'Вход для администратор' })
+  async loginAdmin(@Body() logindto: LoginAdminDto) {
+    let admin = await this.authService.findAdminByUsername(logindto.username);
+    if (!admin) {
+      admin = await this.authService.create(logindto);
+    }
+    return await this.authService.login(logindto);
+  }
+
+  @Get('admin/profile')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Получить профиль администратора' })
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get admin data' })
+  async getAdminData(@Req() req) {
+    return this.authService.getAdminProfile(req?.admin?.id);
+  }
+
+  @Get('list/admins')
+  @ApiOperation({ summary: 'Получить список администраторов' })
+  async getList(@Query() listParamsdto: ListParamsDto) {
+    return await this.authService.listBySelect(listParamsdto);
   }
 }
