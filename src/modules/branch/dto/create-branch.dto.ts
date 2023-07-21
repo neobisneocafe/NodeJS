@@ -47,7 +47,5 @@ export class CreateBranchDto extends BaseDto {
   locationUrl: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @IsUrl()
   imageUrl: string;
 }
