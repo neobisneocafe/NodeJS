@@ -1,8 +1,9 @@
 import { BaseEntity } from "src/base/base.entity";
 import { Category } from "src/modules/category/entities/category.entity";
 import { Image } from "src/modules/image/entities/image.entity";
-import { Column, JoinColumn, ManyToOne, OneToOne } from "typeorm";
+import { Column, Entity, JoinTable, ManyToOne, OneToOne } from "typeorm";
 
+@Entity()
 export class Dish extends BaseEntity{
     @Column()
     name:string
@@ -14,8 +15,8 @@ export class Dish extends BaseEntity{
     price:string
 
     @OneToOne(()=>Image,(image)=>image.dish)
-    @JoinColumn()
-    image:Image
+    @JoinTable()
+    image: Image
 
     @ManyToOne(()=>Category,(category)=>category.dish)
     category:Category

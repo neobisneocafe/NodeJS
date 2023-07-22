@@ -6,12 +6,10 @@ import { Image } from "src/modules/image/entities/image.entity";
 export class CreateDishDto extends BaseDto {
     @ApiProperty()
     @IsString()
-    @IsOptional()
     name:string
 
     @ApiProperty()
     @IsString()
-    @IsOptional()
     description:string
 
     @ApiProperty()
@@ -20,11 +18,9 @@ export class CreateDishDto extends BaseDto {
     price:string
 
     @ApiProperty()
-    @IsOptional()
     image:Image
 
     @ApiProperty()
-    @IsOptional()
     @IsString()
     category:string
 }
