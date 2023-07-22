@@ -33,4 +33,6 @@ export class BranchService extends BaseService<BranchEntity> {
       return await this.branchRepo.remove(branch);
     }
   }
+
+  // ========================================================
 }
