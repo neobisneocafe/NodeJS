@@ -20,31 +20,6 @@ export class DishesService extends BaseService<Dish> {
     super(dishRepo);
   }
 
-  // async createOneDish(
-  //   dishDto: CreateDishDto,
-  //   categoryName: string, // Add categoryName parameter to receive the category name
-  //   file: Express.Multer.File,
-  // ) {
-  //   const dish = new Dish();
-
-  //   if (!file) {
-  //     throw new BadRequestException('Image is not provided!');
-  //   }
-
-  //   const image = await this.imageService.createImage(file);
-  //   dish.absorbFromDto(dishDto);
-  //   dish.image = image;
-
-  //   // Create or get the category
-  //   let category = await this.categoryService.createOne({ name: });
-
-  //   // Associate the category with the dish
-  //   dish.category = category;
-
-  //   await this.dishRepo.save(dish);
-  //   return dish;
-  // }
-
   async createOneDish(dishDto: CreateDishDto, file: Express.Multer.File) {
     const dish = new Dish();
     const category = await this.categoryRepo.findOne({
