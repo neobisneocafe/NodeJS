@@ -25,14 +25,14 @@ export class CategoryService extends BaseService<Category> {
     return await this.categoryRepo.save(newCategory);
   }
 
-  async getDishesOfCategory(name:string){
+  async getDishesOfCategory(name: string) {
     const category = await this.categoryRepo.findOne({
-      where:{name:name},
-      relations:['dish']
-    })
-    if(!category){
-      throw new BadRequestException('Incorrect name of category')
+      where: { name: name },
+      relations: ['dish'],
+    });
+    if (!category) {
+      throw new BadRequestException('Incorrect name of category');
     }
-    return category.dish
+    return category.dish;
   }
 }

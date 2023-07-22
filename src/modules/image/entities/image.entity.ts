@@ -12,7 +12,7 @@ export class Image extends BaseEntity {
   @Column()
   publicId: string;
 
-  @OneToOne(()=>Dish,(dish)=>dish.image)
+  @OneToOne(() => Dish, (dish) => dish.image)
   @JoinColumn()
-  dish:Dish
+  dish: Dish;
 }

@@ -1,8 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete ,Query,  UploadedFile,
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
   UsePipes,
-  ValidationPipe,} from '@nestjs/common';
+  ValidationPipe,
+} from '@nestjs/common';
 import { DishesService } from './dishes.service';
 import { CreateDishDto } from './dto/create-dish.dto';
 import { UpdateDishDto } from './dto/update-dish.dto';
@@ -19,44 +29,47 @@ export class DishesController {
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    schema:{
-      type:'object',
+    schema: {
+      type: 'object',
       properties: {
-        name:{
-          type:'string',
-          example:'Брауни',
-          description:'Название блюда'
-        },
-        description:{
+        name: {
           type: 'string',
-          example:'Бра́уни — шоколадное пирожное коричневого цвета, прямоугольные куски нарезанного шоколадного пирога.',
-          description:'Описание блюда'
+          example: 'Брауни',
+          description: 'Название блюда',
         },
-        price:{
-          type:'string',
-          example:'140 с',
-          description:'Цена блюда'
+        description: {
+          type: 'string',
+          example:
+            'Бра́уни — шоколадное пирожное коричневого цвета, прямоугольные куски нарезанного шоколадного пирога.',
+          description: 'Описание блюда',
         },
-        image:{
+        price: {
+          type: 'string',
+          example: '140 с',
+          description: 'Цена блюда',
+        },
+        image: {
           type: 'string',
           format: 'binary',
         },
-        category: { 
-          type: 'string', 
-          example: 'Дессерты' ,
-        description: 'Название категории'},
-      }
-    }
+        category: {
+          type: 'string',
+          example: 'Дессерты',
+          description: 'Название категории',
+        },
+      },
+    },
   })
   create(
     @Body() createDishDto: CreateDishDto,
-    @UploadedFile() file: Express.Multer.File) {
-    return this.dishesService.createOneDish(createDishDto,file)
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.dishesService.createOneDish(createDishDto, file);
   }
 
   @Get('/list')
-  @ApiOperation({summary:'Получить список всех блюд'})
-  async listOfDishes(@Query() listParamsDto: ListParamsDto){
-    return await this.dishesService.list(listParamsDto)
+  @ApiOperation({ summary: 'Получить список всех блюд' })
+  async listOfDishes(@Query() listParamsDto: ListParamsDto) {
+    return await this.dishesService.list(listParamsDto);
   }
 }

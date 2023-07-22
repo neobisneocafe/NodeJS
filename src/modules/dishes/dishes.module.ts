@@ -11,8 +11,13 @@ import { Image } from '../image/entities/image.entity';
 import { CategoryService } from '../category/category.service';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Category,Dish , Image]),CategoryModule,ImageModule,CloudinaryModule],
+  imports: [
+    TypeOrmModule.forFeature([Category, Dish, Image]),
+    CategoryModule,
+    ImageModule,
+    CloudinaryModule,
+  ],
   controllers: [DishesController],
-  providers: [DishesService]
+  providers: [DishesService],
 })
 export class DishesModule {}
