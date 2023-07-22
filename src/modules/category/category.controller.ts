@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ListParamsDto } from 'src/base/dto/list-params.dto';
 
