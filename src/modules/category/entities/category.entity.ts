@@ -1,5 +1,6 @@
 import { BaseEntity } from 'src/base/base.entity';
-import { Column, Entity } from 'typeorm';
+import { Dish } from 'src/modules/dishes/entities/dish.entity';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity()
 export class Category extends BaseEntity {
@@ -14,4 +15,7 @@ export class Category extends BaseEntity {
     default: false,
   })
   isDeleted: boolean;
+
+  @OneToMany(()=>Dish,(dish)=>dish.category)
+  dish:Dish[]
 }
