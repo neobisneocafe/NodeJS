@@ -6,12 +6,14 @@ import { AuthModule } from './modules/auth/auth.module';
 import { BranchModule } from './modules/branch/branch.module';
 import { UserModule } from './modules/user/user.module';
 import { QrcodeModule } from './modules/qrcode/qrcode.module';
+import { CategoryModule } from './modules/category/category.module';
 
 @Module({
   imports: [
     ImageModule,
     AuthModule,
     UserModule,
+    CategoryModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
