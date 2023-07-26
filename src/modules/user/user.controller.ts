@@ -29,7 +29,7 @@ export class UserController {
   @Delete(':id')
   @ApiOperation({ summary: 'Удалить пользователя по его ID' })
   async removeUser(@Param('id') id: number) {
-    return await this.userService.deleteUsers(id)
+    return await this.userService.deleteUsers(id);
   }
 
   @Get('profile')

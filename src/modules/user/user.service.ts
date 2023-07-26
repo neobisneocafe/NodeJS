@@ -123,13 +123,13 @@ export class UserService extends BaseService<User> {
     }
   }
 
-  async deleteUsers(id:number){
+  async deleteUsers(id: number) {
     const user = await this.userRepository.findOne({
-      where:{id:id}
-    })
-    if(user){
-      return await this.userRepository.remove(user)
+      where: { id: id },
+    });
+    if (user) {
+      return await this.userRepository.remove(user);
     }
-    return 'User nor found!'
+    return 'User nor found!';
   }
 }

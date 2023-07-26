@@ -1,7 +1,14 @@
 import { BaseEntity } from 'src/base/base.entity';
 import { Category } from 'src/modules/category/entities/category.entity';
 import { Image } from 'src/modules/image/entities/image.entity';
-import { Column, Entity, JoinColumn, JoinTable, ManyToOne, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToOne,
+  OneToOne,
+} from 'typeorm';
 
 @Entity()
 export class Dish extends BaseEntity {
