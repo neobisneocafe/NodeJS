@@ -30,7 +30,6 @@ export class CreateBranchDto extends BaseDto {
 
   @ApiProperty({ example: 'neocafe2023@gmail.com' })
   @IsOptional()
-  @IsEmail()
   email: string;
 
   @ApiProperty({ example: '2023-03-22T10:30:40.000Z' })
@@ -43,9 +42,9 @@ export class CreateBranchDto extends BaseDto {
 
   @ApiProperty({ example: 'https://2gis.kg/bishkek/geo/70000001019343641' })
   @IsOptional()
-  @IsUrl()
   locationUrl: string;
 
   @ApiProperty()
+  @IsOptional()
   imageUrl: string;
 }

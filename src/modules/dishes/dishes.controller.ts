@@ -12,6 +12,7 @@ import {
   UseInterceptors,
   UsePipes,
   ValidationPipe,
+  NotFoundException,
 } from '@nestjs/common';
 import { DishesService } from './dishes.service';
 import { CreateDishDto } from './dto/create-dish.dto';
@@ -70,7 +71,7 @@ export class DishesController {
   @Get('/list')
   @ApiOperation({ summary: 'Получить список всех блюд' })
   async listOfDishes(@Query() listParamsDto: ListParamsDto) {
-    return await this.dishesService.getLlistOfDishes(listParamsDto);
+    return await this.dishesService.list(listParamsDto);
   }
 
   @Get(':categoryName')
