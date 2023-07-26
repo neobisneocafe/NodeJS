@@ -7,6 +7,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from '../category/entities/category.entity';
 import { ImageService } from '../image/image.service';
+import { ListParamsDto } from 'src/base/dto/list-params.dto';
+import { ListDto } from 'src/base/dto/list.dto';
 
 @Injectable()
 export class DishesService extends BaseService<Dish> {
@@ -37,5 +39,35 @@ export class DishesService extends BaseService<Dish> {
     dish.category = category;
     await this.dishRepo.save(dish);
     return dish;
+  }
+
+  async getLlistOfDishes(listParamsDto:ListParamsDto){
+    const array = await this.dishRepo
+    .createQueryBuilder('dish')
+    .leftJoinAndSelect('dish.image','image')
+    .leftJoinAndSelect('dish.category','category')
+    // .where('dish.isDeleted!=true')
+    .limit(listParamsDto.limit)
+    .offset(listParamsDto.countOffset())
+    .orderBy(`
+    dish.${listParamsDto.getOrderedField()}`,listParamsDto.order)
+    .getMany()
+    const itemsCount = await this.repository.createQueryBuilder().getCount()
+    return new ListDto(array,{
+      page:listParamsDto.page,
+      itemsCount,
+      limit:listParamsDto.limit,
+      order:listParamsDto.order,
+      orderField:listParamsDto.orderField,
+    })
+  }
+
+  async getProductsSortedByCategory(name: string): Promise<Dish[]> {
+    return this.dishRepo
+      .createQueryBuilder('dish')
+      .innerJoinAndSelect('dish.category', 'category')
+      .where('category.name = :name', { name }) 
+      .orderBy('category.name', 'ASC') 
+      .getMany();
   }
 }

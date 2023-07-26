@@ -70,6 +70,12 @@ export class DishesController {
   @Get('/list')
   @ApiOperation({ summary: 'Получить список всех блюд' })
   async listOfDishes(@Query() listParamsDto: ListParamsDto) {
-    return await this.dishesService.list(listParamsDto);
+    return await this.dishesService.getLlistOfDishes(listParamsDto)
+  }
+
+  @Get(':categoryName')
+  @ApiOperation({summary:'Получить список блюд опеределенной категории'})
+  async getDishesByCategory(@Param('categoryName') categoryName: string) {
+    return this.dishesService.getProductsSortedByCategory(categoryName); // Передаем categoryName в метод getProductsSortedByCategory
   }
 }

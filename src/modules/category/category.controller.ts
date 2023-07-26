@@ -29,10 +29,4 @@ export class CategoryController {
   async getList(@Query() listParamsDto: ListParamsDto) {
     return await this.categoryService.list(listParamsDto);
   }
-
-  @Get('list/category/name')
-  @ApiOperation({ summary: 'Получить список блюд определенной категории' })
-  async getLisOfDishesByCategory(@Param('name') name: string) {
-    return await this.categoryService.getDishesOfCategory(name);
-  }
 }
