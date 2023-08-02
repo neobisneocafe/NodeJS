@@ -43,7 +43,8 @@ export class CreateBranchDto extends BaseDto {
 
   @ApiProperty({ example: 'https://2gis.kg/bishkek/geo/70000001019343641' })
   @IsOptional()
-  @IsUrl()
+  @IsUrl({ require_protocol: true })
+  @IsNotEmpty()
   locationUrl: string;
 
   @ApiProperty()

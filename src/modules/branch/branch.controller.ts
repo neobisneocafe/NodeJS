@@ -42,7 +42,7 @@ export class BranchController {
     schema: {
       type: 'object',
       properties: {
-        name: { type: 'string', example: 'Имя Фамилия' },
+        name: { type: 'string', example: '1 Филиал' },
         managerName: {
           type: 'string',
           example: 'ФИО менеджера',
