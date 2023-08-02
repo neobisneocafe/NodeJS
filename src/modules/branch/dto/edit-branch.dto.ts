@@ -1,18 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { BaseDto } from 'src/base/dto/base.dto.';
-export class CreateBranchDto extends BaseDto {
-  @ApiProperty({ example: 'Имя филиала' })
-  @IsNotEmpty()
-  @IsString()
+export class EditBranchDto extends BaseDto {
+  @ApiProperty({ example: 'Новое имя филиала' })
   name: string;
 
-  @ApiProperty({ example: 'Имя менеджера' })
+  @ApiProperty({ example: 'Новое имя менеджера' })
   @IsOptional()
   @IsString()
   managerName: string;
 
-  @ApiProperty({ example: 'Адрес текстом' })
+  @ApiProperty({ example: 'Новый адрес текстом' })
   @IsNotEmpty()
   @IsString()
   adress: string;
