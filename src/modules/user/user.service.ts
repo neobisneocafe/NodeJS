@@ -27,24 +27,6 @@ export class UserService extends BaseService<User> {
     return await this.userRepository.save(user);
   }
 
-  // async create(createUserDto: CreateUserDto) {
-  //   const userExists = await this.findOne(createUserDto.phoneNumber);
-
-  //   if (userExists && userExists.confirmed) {
-  //     throw new BadRequestException('User already exists');
-  //   }
-
-  //   if (userExists && !userExists.confirmed) {
-  //     await this.userRepository.remove(userExists);
-  //   }
-
-  //   const user = new User();
-  //   user.phoneNumber = createUserDto.phoneNumber;
-  //   user.firstName = createUserDto.firstName;
-
-  //   return this.userRepository.save(user);
-  // }
-
   async create(createUserDto: CreateUserDto) {
     const userExists = await this.findOne(createUserDto.phoneNumber);
 
@@ -139,5 +121,15 @@ export class UserService extends BaseService<User> {
       user.absorbFromDto(updateDto);
       return this.userRepository.save(user);
     }
+  }
+
+  async deleteUsers(id:number){
+    const user = await this.userRepository.findOne({
+      where:{id:id}
+    })
+    if(user){
+      return await this.userRepository.remove(user)
+    }
+    return 'User nor found!'
   }
 }
