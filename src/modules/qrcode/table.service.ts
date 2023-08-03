@@ -22,6 +22,10 @@ export class TableService extends BaseService<TableEntity> {
     super(tableRepo);
   }
 
+  async getAllTablesByBranch(branchId: number) {
+    return this.tableRepo.find({ where: { id: branchId } });
+  }
+
   async createTable(data: CreateTableDto) {
     let uniqueCode = await this.generateRandomString();
     uniqueCode = await this.checkIfUnique(uniqueCode);
