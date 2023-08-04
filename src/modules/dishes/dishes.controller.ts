@@ -45,7 +45,7 @@ export class DishesController {
         },
         price: {
           type: 'string',
-          example: '140 с',
+          example: '140',
           description: 'Цена блюда',
         },
         image: {
@@ -70,11 +70,11 @@ export class DishesController {
   @Get('/list')
   @ApiOperation({ summary: 'Получить список всех блюд' })
   async listOfDishes(@Query() listParamsDto: ListParamsDto) {
-    return await this.dishesService.getLlistOfDishes(listParamsDto)
+    return await this.dishesService.getLlistOfDishes(listParamsDto);
   }
 
   @Get(':categoryName')
-  @ApiOperation({summary:'Получить список блюд опеределенной категории'})
+  @ApiOperation({ summary: 'Получить список блюд опеределенной категории' })
   async getDishesByCategory(@Param('categoryName') categoryName: string) {
     return this.dishesService.getProductsSortedByCategory(categoryName); // Передаем categoryName в метод getProductsSortedByCategory
   }

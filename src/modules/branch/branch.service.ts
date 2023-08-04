@@ -4,8 +4,6 @@ import { BaseService } from 'src/base/base.service';
 import { BranchEntity } from './entities/branch.entity';
 import { Repository } from 'typeorm';
 import { CreateBranchDto } from './dto/create-branch.dto';
-import { log } from 'console';
-import { ImageService } from '../image/image.service';
 import { EditBranchDto } from './dto/edit-branch.dto';
 
 @Injectable()
