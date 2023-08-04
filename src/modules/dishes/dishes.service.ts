@@ -35,39 +35,47 @@ export class DishesService extends BaseService<Dish> {
     }
     const image = await this.imageService.createImage(file);
     dish.absorbFromDto(dishDto);
+    dish.price = parseInt(dishDto.price);
     dish.image = image;
     dish.category = category;
     await this.dishRepo.save(dish);
     return dish;
   }
 
-  async getLlistOfDishes(listParamsDto:ListParamsDto){
+  async getOneDish(id: number) {
+    return await this.dishRepo.findOne({ where: { id: id } });
+  }
+
+  async getLlistOfDishes(listParamsDto: ListParamsDto) {
     const array = await this.dishRepo
-    .createQueryBuilder('dish')
-    .leftJoinAndSelect('dish.image','image')
-    .leftJoinAndSelect('dish.category','category')
-    // .where('dish.isDeleted!=true')
-    .limit(listParamsDto.limit)
-    .offset(listParamsDto.countOffset())
-    .orderBy(`
-    dish.${listParamsDto.getOrderedField()}`,listParamsDto.order)
-    .getMany()
-    const itemsCount = await this.repository.createQueryBuilder().getCount()
-    return new ListDto(array,{
-      page:listParamsDto.page,
+      .createQueryBuilder('dish')
+      .leftJoinAndSelect('dish.image', 'image')
+      .leftJoinAndSelect('dish.category', 'category')
+      // .where('dish.isDeleted!=true')
+      .limit(listParamsDto.limit)
+      .offset(listParamsDto.countOffset())
+      .orderBy(
+        `
+    dish.${listParamsDto.getOrderedField()}`,
+        listParamsDto.order,
+      )
+      .getMany();
+    const itemsCount = await this.repository.createQueryBuilder().getCount();
+    return new ListDto(array, {
+      page: listParamsDto.page,
       itemsCount,
-      limit:listParamsDto.limit,
-      order:listParamsDto.order,
-      orderField:listParamsDto.orderField,
-    })
+      limit: listParamsDto.limit,
+      order: listParamsDto.order,
+      orderField: listParamsDto.orderField,
+    });
   }
 
   async getProductsSortedByCategory(name: string): Promise<Dish[]> {
     return this.dishRepo
       .createQueryBuilder('dish')
       .innerJoinAndSelect('dish.category', 'category')
-      .where('category.name = :name', { name }) 
-      .orderBy('category.name', 'ASC') 
+      .where('category.name = :name', { name })
+      .orderBy('category.name', 'ASC')
       .getMany();
   }
 }

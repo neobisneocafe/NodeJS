@@ -8,6 +8,7 @@ import { UserModule } from './modules/user/user.module';
 import { QrcodeModule } from './modules/qrcode/qrcode.module';
 import { CategoryModule } from './modules/category/category.module';
 import { DishesModule } from './modules/dishes/dishes.module';
+import { BasketModule } from './modules/basket/basket.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { DishesModule } from './modules/dishes/dishes.module';
     DishesModule,
     BranchModule,
     QrcodeModule,
+    BasketModule,
   ],
   controllers: [],
 })

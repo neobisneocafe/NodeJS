@@ -83,7 +83,7 @@ export class BranchController {
   }
 
   @Patch(':branchId')
-  @ApiOperation({ summary: 'Создать один филиал' })
+  @ApiOperation({ summary: 'Редактировать один филиал' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
