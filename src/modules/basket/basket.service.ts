@@ -23,11 +23,11 @@ export class BasketService extends BaseService<Basket> {
     const dishesList = [];
     for (let i = 0; i < dishId.length; i++) {
       const dish = await this.dishesService.getOneDish(dishId[i]);
-      await this.checkIfExcist(dish, 'dish', dish.id);
+      await this.checkIfExcist(dish, 'dish', data.dishId);
       dishesList.push(dish);
     }
     const user = await this.userService.getProfile(userId);
-    await this.checkIfExcist(user, 'user', user.id);
+    await this.checkIfExcist(user, 'user', userId);
     const newOrder = new Basket();
     let dishesPrice = 0;
     for (let i = 0; i < dishesList.length; i++) {
