@@ -1,5 +1,6 @@
 import {
   Body,
+  Delete,
   Get,
   Controller,
   Post,
@@ -30,18 +31,47 @@ export class BasketController {
     return await this.basketService.getAllMyOrders(req.user.id);
   }
 
+  @ApiOperation({ summary: 'Найти заказ по id' })
+  @Get(':orderId')
+  async getOneOrder(@Param('orderId') orderId: number) {
+    return await this.basketService.getOrder(orderId);
+  }
+
   @Roles(UserRoleEnum.USER)
   @UseGuards(JwtAuthGuard, RoleGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Сделать заказ' })
-  @Post('order')
-  async order(@Req() req, @Body() orderDto: OrderDto) {
-    return await this.basketService.order(req.user.id, orderDto);
+  @Post(':branchId/order')
+  async order(
+    @Param('branchId') branchId: number,
+    @Req() req,
+    @Body() orderDto: OrderDto,
+  ) {
+    return await this.basketService.order(req.user.id, orderDto, +branchId);
+  }
+
+  @Roles(UserRoleEnum.USER)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Повторить заказ' })
+  @Post(':branchId/:orderId')
+  async repeatOrder(
+    @Param('branchId') branchId: number,
+    @Param('orderId') orderId: number,
+    @Req() req,
+  ) {
+    return await this.basketService.repeat(req.user.id, +orderId, +branchId);
   }
 
   @ApiOperation({ summary: 'Подтвердить и завершить заказ (для баристы)' })
   @Patch(':orderId')
   async activateOrder(@Param('orderId') orderId: number) {
     return await this.basketService.approveOrder(orderId);
+  }
+
+  @ApiOperation({ summary: 'Удалить заказ (для баристы)' })
+  @Delete(':orderId')
+  async deleteOrder(@Param('orderId') orderId: number) {
+    return await this.basketService.deleteOrder(orderId);
   }
 }

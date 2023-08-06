@@ -1,4 +1,5 @@
 import { BaseEntity } from 'src/base/base.entity';
+import { BranchEntity } from 'src/modules/branch/entities/branch.entity';
 import { Dish } from 'src/modules/dishes/entities/dish.entity';
 import { User } from 'src/modules/user/entities/user.entity';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
@@ -10,6 +11,12 @@ export class Basket extends BaseEntity {
     onUpdate: 'CASCADE',
   })
   user: User;
+
+  @ManyToOne(() => BranchEntity, (branch) => branch.orders, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  branch: BranchEntity;
 
   @ManyToMany(() => Dish)
   @JoinTable()

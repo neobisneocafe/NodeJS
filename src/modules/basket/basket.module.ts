@@ -5,9 +5,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Basket } from './entities/basket.entity';
 import { UserModule } from '../user/user.module';
 import { DishesModule } from '../dishes/dishes.module';
+import { BranchModule } from '../branch/branch.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Basket]), UserModule, DishesModule],
+  imports: [
+    TypeOrmModule.forFeature([Basket]),
+    UserModule,
+    DishesModule,
+    BranchModule,
+  ],
   controllers: [BasketController],
   providers: [BasketService],
 })

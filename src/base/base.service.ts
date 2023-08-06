@@ -114,7 +114,9 @@ export abstract class BaseService<T extends BaseEntity> {
 
   async checkIfExcist(obj: any, name: string, id: any) {
     if (!obj) {
-      throw new BadRequestException(`Поле ${name} С id ${id} не найдено`);
+      throw new BadRequestException(
+        `Поле ${name} С id ${id} не найдено в базе данных`,
+      );
     }
   }
 }
