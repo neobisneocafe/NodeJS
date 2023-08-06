@@ -53,7 +53,7 @@ export class TableService extends BaseService<TableEntity> {
     });
     // console.log(user);
     await this.checkIfExcist(user, 'user', userId);
-    await this.checkIfExcist(table, 'table', parseInt(bookTableDto.uniqueCode));
+    await this.checkIfExcist(table, 'table', bookTableDto.uniqueCode);
     if (user.table[0]) {
       throw new BadRequestException('У вас есть забронированный столик');
     }
