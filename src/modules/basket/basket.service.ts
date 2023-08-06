@@ -54,6 +54,7 @@ export class BasketService extends BaseService<Basket> {
     const order = await this.basketRepo.findOne({ where: { id: orderId } });
     order.isApproved = true;
     order.isPaid = true;
+    order.isCompleted = true;
     return await this.basketRepo.save(order);
   }
 }
