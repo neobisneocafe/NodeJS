@@ -39,7 +39,7 @@ export class BasketController {
     return await this.basketService.order(req.user.id, orderDto);
   }
 
-  @ApiOperation({ summary: 'Подтвердить заказ (для баристы)' })
+  @ApiOperation({ summary: 'Подтвердить и завершить заказ (для баристы)' })
   @Patch(':orderId')
   async activateOrder(@Param('orderId') orderId: number) {
     return await this.basketService.approveOrder(orderId);

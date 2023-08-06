@@ -21,6 +21,9 @@ export class Basket extends BaseEntity {
   @Column({ default: false })
   isPaid: boolean;
 
+  @Column({ default: false })
+  isCompleted: boolean;
+
   @Column()
   dishesPrice: number;
 
