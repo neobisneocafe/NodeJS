@@ -52,8 +52,8 @@ export class TableService extends BaseService<TableEntity> {
       relations: ['branch'],
     });
     // console.log(user);
-    await this.checkIfExcist(user, 'user', user.id);
-    await this.checkIfExcist(table, 'table', table.id);
+    await this.checkIfExcist(user, 'user', userId);
+    await this.checkIfExcist(table, 'table', parseInt(bookTableDto.uniqueCode));
     if (user.table[0]) {
       throw new BadRequestException('У вас есть забронированный столик');
     }
@@ -72,8 +72,8 @@ export class TableService extends BaseService<TableEntity> {
       where: { id: releaseTable.tableId },
     });
     const user = await this.userService.getProfile(userId);
-    await this.checkIfExcist(user, 'user', user.id);
-    await this.checkIfExcist(table, 'table', table.id);
+    await this.checkIfExcist(user, 'user', userId);
+    await this.checkIfExcist(table, 'table', releaseTable.tableId);
     if (table === user.table[0] || table.isBooked) {
       table.isBooked = false;
       user.table = [];
@@ -94,7 +94,7 @@ export class TableService extends BaseService<TableEntity> {
       where: { id: id },
       relations: ['tables'],
     });
-    await this.checkIfExcist(branch, 'branch', branch.id);
+    await this.checkIfExcist(branch, 'branch', id);
     return branch.tables;
   }
 
@@ -127,7 +127,7 @@ export class TableService extends BaseService<TableEntity> {
       where: { id: data.branchId },
       relations: ['tables'],
     });
-    await this.checkIfExcist(branch, 'branch', branch.id);
+    await this.checkIfExcist(branch, 'branch', data.branchId);
     for (let i = 0; i < branch.tables.length; i++) {
       if (branch.tables[i].name === data.name) {
         throw new BadRequestException(
