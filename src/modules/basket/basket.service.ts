@@ -21,7 +21,10 @@ export class BasketService extends BaseService<Basket> {
   }
 
   async getOrder(id: number) {
-    const order = await this.basketRepo.findOne({ where: { id: id } });
+    const order = await this.basketRepo.findOne({
+      where: { id: id },
+      relations: ['dishes', 'branch', 'dishes.image'],
+    });
     await this.checkIfExcist(order, 'order', id);
     return order;
   }
@@ -56,7 +59,7 @@ export class BasketService extends BaseService<Basket> {
   async getAllMyOrders(userId: number) {
     const orders = await this.basketRepo.find({
       where: { user: { id: userId } },
-      relations: ['dishes', 'branch'],
+      relations: ['dishes', 'branch', 'dishes.image'],
     });
     return orders;
   }
