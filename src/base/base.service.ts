@@ -112,6 +112,10 @@ export abstract class BaseService<T extends BaseEntity> {
     return this.repository.createQueryBuilder().where(where).delete();
   }
 
+  async filterKeys(obj, except) {
+    Object.keys(obj).forEach((n) => except.includes(n) || delete obj[n]);
+  }
+
   async checkIfExcist(obj: any, name: string, id: any) {
     if (!obj) {
       throw new BadRequestException(

@@ -9,6 +9,7 @@ import { Category } from '../category/entities/category.entity';
 import { ImageService } from '../image/image.service';
 import { ListParamsDto } from 'src/base/dto/list-params.dto';
 import { ListDto } from 'src/base/dto/list.dto';
+import { MenuItemsService } from '../menu-items/menu-items.service';
 
 @Injectable()
 export class DishesService extends BaseService<Dish> {
@@ -18,6 +19,7 @@ export class DishesService extends BaseService<Dish> {
     @InjectRepository(Category)
     private readonly categoryRepo: Repository<Category>,
     private readonly imageService: ImageService,
+    private readonly menuItemService: MenuItemsService,
   ) {
     super(dishRepo);
   }
@@ -51,6 +53,7 @@ export class DishesService extends BaseService<Dish> {
       .createQueryBuilder('dish')
       .leftJoinAndSelect('dish.image', 'image')
       .leftJoinAndSelect('dish.category', 'category')
+      .leftJoinAndSelect('dish.menuItem', 'menuItem')
       // .where('dish.isDeleted!=true')
       .limit(listParamsDto.limit)
       .offset(listParamsDto.countOffset())
@@ -77,5 +80,50 @@ export class DishesService extends BaseService<Dish> {
       .where('category.name = :name', { name })
       .orderBy('category.name', 'ASC')
       .getMany();
+  }
+
+  async createOneDishNew(dishDto: CreateDishDto, file: Express.Multer.File) {
+    const dish = new Dish();
+    const category = await this.categoryRepo.findOne({
+      where: { name: dishDto.category },
+    });
+
+    if (!category) {
+      throw new BadRequestException('Category is not provided!');
+    }
+
+    if (!file) {
+      throw new BadRequestException('Image is not provided!');
+    }
+
+    const image = await this.imageService.createImage(file);
+    // dish.price = parseInt(dishDto.price);
+    // dish.image = image;
+    // dish.category = category;
+
+    if (dishDto.items) {
+      try {
+        const ingredientIds = JSON.parse(dishDto.items);
+        if (Array.isArray(ingredientIds)) {
+          const ingredients = [];
+          for await (const id of ingredientIds) {
+            const ingredient = await this.menuItemService.get(id);
+            if (!ingredient) continue;
+            ingredients.push(ingredient);
+          }
+          dish.menuItem = ingredients;
+        }
+      } catch (e) {
+        console.log(e.message);
+      }
+    }
+    delete dishDto.items;
+
+    dish.absorbFromDto(dishDto);
+    dish.price = parseInt(dishDto.price);
+    dish.image = image;
+    dish.category = category;
+    await this.dishRepo.save(dish);
+    return dish;
   }
 }

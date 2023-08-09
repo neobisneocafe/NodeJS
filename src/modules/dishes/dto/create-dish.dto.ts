@@ -22,5 +22,10 @@ export class CreateDishDto extends BaseDto {
 
   @ApiProperty()
   @IsString()
+  @IsOptional()
   category: string;
+
+  @ApiProperty()
+  @IsOptional()
+  items: string;
 }

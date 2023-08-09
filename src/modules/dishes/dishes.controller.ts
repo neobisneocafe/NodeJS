@@ -51,6 +51,10 @@ export class DishesController {
           example: 'Дессерты',
           description: 'Название категории',
         },
+        items: {
+          type: 'string',
+          example: '[1,2]',
+        },
       },
     },
   })
@@ -58,7 +62,7 @@ export class DishesController {
     @Body() createDishDto: CreateDishDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.dishesService.createOneDish(createDishDto, file);
+    return this.dishesService.createOneDishNew(createDishDto, file);
   }
 
   @Get('/list')
