@@ -21,6 +21,8 @@ import { Admin } from './entities/admins.entity';
 import { LoginAdminDto } from './dto/admin.dto';
 import { ListParamsDto } from 'src/base/dto/list-params.dto';
 import { ListDto } from 'src/base/dto/list.dto';
+import { Hash } from 'src/utils/hash.utils';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -239,7 +241,7 @@ export class AuthService {
       throw new ConflictException('Admin is already exists');
     }
     const admin = new Admin();
-    // loginDto.password = Hash.make(loginDto.password);
+    loginDto.password = Hash.make(loginDto.password);
     admin.absorbFromDto(loginDto);
     return this.adminRepo.save(admin);
   }
@@ -251,18 +253,72 @@ export class AuthService {
     return findOnebyUsername;
   }
 
+  // async login(login: LoginAdminDto) {
+  //   const admin = await this.adminRepo.findOne({
+  //     where: { username: login.username }
+  //   });
+  //   if (!admin) {
+  //     throw new UnauthorizedException();
+  //   }
+  //   const payload = this.createAdminPayload(admin);
+  //   const refreshToken = this.generateRefreshToken();
+  //   admin.refresh_token = refreshToken;
+  //   admin.hasAdmin = true;
+  //   await this.adminRepo.save(admin);
+  //   return {
+  //     access_token: this.generateAccessToken(payload),
+  //     refreshToken,
+  //   };
+  // }
+
   async login(login: LoginAdminDto) {
     const admin = await this.adminRepo.findOne({
       where: { username: login.username },
     });
-    if (!admin) {
+
+    if (!admin || !(await bcrypt.compare(login.password, admin.password))) {
       throw new UnauthorizedException();
     }
+
     const payload = this.createAdminPayload(admin);
     const refreshToken = this.generateRefreshToken();
     admin.refresh_token = refreshToken;
     admin.hasAdmin = true;
     await this.adminRepo.save(admin);
+
+    return {
+      access_token: this.generateAccessToken(payload),
+      refreshToken,
+    };
+  }
+
+  async loginNew(login: LoginAdminDto) {
+    const admin = await this.adminRepo.findOne({
+      where: { username: login.username },
+    });
+
+    if (!admin) {
+      throw new UnauthorizedException();
+    }
+    if (admin.hasAdmin === false) {
+      admin.hasAdmin = true;
+      await this.adminRepo.save(admin);
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      login.password,
+      admin.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException();
+    }
+
+    const payload = this.createAdminPayload(admin);
+    const refreshToken = this.generateRefreshToken();
+    admin.refresh_token = refreshToken;
+    await this.adminRepo.save(admin);
+
     return {
       access_token: this.generateAccessToken(payload),
       refreshToken,
