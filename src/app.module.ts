@@ -8,6 +8,8 @@ import { UserModule } from './modules/user/user.module';
 import { QrcodeModule } from './modules/qrcode/qrcode.module';
 import { CategoryModule } from './modules/category/category.module';
 import { DishesModule } from './modules/dishes/dishes.module';
+import { BasketModule } from './modules/basket/basket.module';
+import { MenuItemsModule } from './modules/menu-items/menu-items.module';
 
 @Module({
   imports: [
@@ -36,8 +38,10 @@ import { DishesModule } from './modules/dishes/dishes.module';
       inject: [ConfigService],
     }),
     DishesModule,
+    MenuItemsModule,
     BranchModule,
     QrcodeModule,
+    BasketModule,
   ],
   controllers: [],
 })

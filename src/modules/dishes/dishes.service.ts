@@ -35,10 +35,15 @@ export class DishesService extends BaseService<Dish> {
     }
     const image = await this.imageService.createImage(file);
     dish.absorbFromDto(dishDto);
+    dish.price = parseInt(dishDto.price);
     dish.image = image;
     dish.category = category;
     await this.dishRepo.save(dish);
     return dish;
+  }
+
+  async getOneDish(id: number) {
+    return await this.dishRepo.findOne({ where: { id: id } });
   }
 
   async getLlistOfDishes(listParamsDto: ListParamsDto) {

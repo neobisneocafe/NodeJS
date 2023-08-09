@@ -17,6 +17,5 @@ export class Category extends BaseEntity {
   isDeleted: boolean;
 
   @OneToMany(() => Dish, (dish) => dish.category)
-  // @JoinColumn()
   dish: Dish[];
 }
