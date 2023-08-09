@@ -40,7 +40,7 @@ export class BasketController {
   @ApiOperation({
     summary: 'Вывести список всех заказов определенного филиала',
   })
-  @Get(':branchId')
+  @Get('byBranch/:branchId')
   async getBranchOrders(@Param('branchId') branchId: number) {
     return await this.basketService.listOrdersByBranch(branchId);
   }
