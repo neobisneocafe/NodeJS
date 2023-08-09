@@ -23,7 +23,7 @@ export class BasketService extends BaseService<Basket> {
   async getOrder(id: number) {
     const order = await this.basketRepo.findOne({
       where: { id: id },
-      relations: ['dishes', 'branch', 'dishes.image'],
+      relations: ['dishes', 'dishes.image', 'branch'],
     });
     await this.checkIfExcist(order, 'order', id);
     return order;
@@ -64,6 +64,59 @@ export class BasketService extends BaseService<Basket> {
     return orders;
   }
 
+  async listOrders() {
+    const orders = await this.basketRepo.find({
+      relations: ['user', 'dishes', 'branch', 'dishes.image'],
+    });
+    return this.filterOrders(orders);
+  }
+  async listOrdersByBranch(branchId: number) {
+    const branch = await this.branchService.getOne(branchId);
+    await this.checkIfExcist(branch, 'branch', branchId);
+    const orders = await this.basketRepo.find({
+      where: { branch: { id: branchId } },
+      relations: ['user', 'dishes', 'branch', 'dishes.image'],
+    });
+    return this.filterOrders(orders);
+  }
+
+  async filterOrders(orders: Basket[]) {
+    for (let i = 0; i < orders.length; i++) {
+      await this.deleteKeys(orders[i], [
+        'id',
+        'isApproved',
+        'IsPaid',
+        'IsCompleted',
+        'dishesPrice',
+        'serviceCost',
+        'overall',
+        'user',
+        'branch',
+        'dishes',
+      ]);
+      await this.deleteKeys(orders[i].user, [
+        'firstName',
+        'phoneNumber',
+        'role',
+      ]);
+      await this.deleteKeys(orders[i].branch, ['id', 'name', 'adress']);
+      for (let j = 0; j < orders[i].dishes.length; j++) {
+        await this.deleteKeys(orders[i].dishes[j], [
+          'id',
+          'name',
+          'image',
+          'category',
+          'menuItem',
+        ]);
+        await this.deleteKeys(orders[i].dishes[j].image, ['url']);
+      }
+    }
+    return orders;
+  }
+
+  async deleteKeys(obj, except) {
+    Object.keys(obj).forEach((n) => except.includes(n) || delete obj[n]);
+  }
   async repeat(userId: number, orderId: number, branchId: number) {
     const user = await this.userService.getProfile(userId);
     const order = await this.get(orderId);
