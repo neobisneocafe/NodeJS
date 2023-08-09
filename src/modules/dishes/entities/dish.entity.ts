@@ -19,7 +19,7 @@ export class Dish extends BaseEntity {
   description: string;
 
   @Column()
-  price: string;
+  price: number;
 
   @OneToOne(() => Image, (image) => image.dish)
   @JoinTable()

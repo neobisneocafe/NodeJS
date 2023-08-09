@@ -112,9 +112,11 @@ export abstract class BaseService<T extends BaseEntity> {
     return this.repository.createQueryBuilder().where(where).delete();
   }
 
-  async checkIfExcist(obj: any, name: string) {
+  async checkIfExcist(obj: any, name: string, id: any) {
     if (!obj) {
-      throw new BadRequestException(`Поле ${name} не найдено`);
+      throw new BadRequestException(
+        `Поле ${name} С id ${id} не найдено в базе данных`,
+      );
     }
   }
 }

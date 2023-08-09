@@ -4,15 +4,13 @@ import { BaseService } from 'src/base/base.service';
 import { BranchEntity } from './entities/branch.entity';
 import { Repository } from 'typeorm';
 import { CreateBranchDto } from './dto/create-branch.dto';
-import { log } from 'console';
-import { ImageService } from '../image/image.service';
+import { EditBranchDto } from './dto/edit-branch.dto';
 
 @Injectable()
 export class BranchService extends BaseService<BranchEntity> {
   constructor(
     @InjectRepository(BranchEntity)
     private readonly branchRepo: Repository<BranchEntity>,
-    private readonly imageService: ImageService,
   ) {
     super(branchRepo);
   }
@@ -22,6 +20,13 @@ export class BranchService extends BaseService<BranchEntity> {
   }
   async createOne(data: CreateBranchDto) {
     const branch = new BranchEntity();
+    branch.absorbFromDto(data);
+    // log(branch);
+    return await this.branchRepo.save(branch);
+  }
+
+  async editOne(branchId, data: EditBranchDto) {
+    const branch = await this.branchRepo.findOne({ where: { id: branchId } });
     branch.absorbFromDto(data);
     // log(branch);
     return await this.branchRepo.save(branch);

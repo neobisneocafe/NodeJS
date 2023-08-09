@@ -1,4 +1,5 @@
 import { BaseEntity } from 'src/base/base.entity';
+import { Basket } from 'src/modules/basket/entities/basket.entity';
 import { TableEntity } from 'src/modules/qrcode/entities/table.entity';
 import { Column, CreateDateColumn, Entity, OneToMany } from 'typeorm';
 
@@ -33,4 +34,7 @@ export class BranchEntity extends BaseEntity {
 
   @OneToMany(() => TableEntity, (table) => table.branch, { cascade: true })
   tables: TableEntity[];
+
+  @OneToMany(() => Basket, (basket) => basket.branch, { cascade: true })
+  orders: Basket[];
 }

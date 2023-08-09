@@ -9,5 +9,6 @@ import { ImageModule } from '../image/image.module';
   imports: [TypeOrmModule.forFeature([BranchEntity]), ImageModule],
   providers: [BranchService],
   controllers: [BranchController],
+  exports: [BranchService],
 })
 export class BranchModule {}

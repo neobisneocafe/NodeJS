@@ -3,20 +3,13 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   Query,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
-  UsePipes,
-  ValidationPipe,
-  NotFoundException,
 } from '@nestjs/common';
 import { DishesService } from './dishes.service';
 import { CreateDishDto } from './dto/create-dish.dto';
-import { UpdateDishDto } from './dto/update-dish.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ListParamsDto } from 'src/base/dto/list-params.dto';
@@ -46,7 +39,7 @@ export class DishesController {
         },
         price: {
           type: 'string',
-          example: '140 с',
+          example: '140',
           description: 'Цена блюда',
         },
         image: {
@@ -71,7 +64,7 @@ export class DishesController {
   @Get('/list')
   @ApiOperation({ summary: 'Получить список всех блюд' })
   async listOfDishes(@Query() listParamsDto: ListParamsDto) {
-    return await this.dishesService.list(listParamsDto);
+    return await this.dishesService.getLlistOfDishes(listParamsDto);
   }
 
   @Get(':categoryName')
