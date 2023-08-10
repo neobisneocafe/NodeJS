@@ -1,9 +1,12 @@
 import { BaseEntity } from 'src/base/base.entity';
+import { Dish } from 'src/modules/dishes/entities/dish.entity';
 import { Image } from 'src/modules/image/entities/image.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToOne,
 } from 'typeorm';
 
@@ -39,4 +42,8 @@ export class MenuItem extends BaseEntity {
 
   @OneToOne(() => Image, (image) => image.item)
   image: Image;
+
+  @ManyToOne(() => Dish, (dish) => dish.menuItem, { cascade: true })
+  @JoinColumn()
+  dish: Dish;
 }
