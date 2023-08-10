@@ -14,6 +14,9 @@ export class BranchService extends BaseService<BranchEntity> {
   ) {
     super(branchRepo);
   }
+  async getOne(id: number) {
+    return await this.branchRepo.findOne({ where: { id: id } });
+  }
 
   async getAll() {
     return await this.branchRepo.find({ relations: ['tables'] });
@@ -21,7 +24,6 @@ export class BranchService extends BaseService<BranchEntity> {
   async createOne(data: CreateBranchDto) {
     const branch = new BranchEntity();
     branch.absorbFromDto(data);
-    // log(branch);
     return await this.branchRepo.save(branch);
   }
 

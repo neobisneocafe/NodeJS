@@ -31,6 +31,20 @@ export class BasketController {
     return await this.basketService.getAllMyOrders(req.user.id);
   }
 
+  @ApiOperation({ summary: 'Вывести список всех заказов' })
+  @Get('all')
+  async getAllOrder() {
+    return await this.basketService.listOrders();
+  }
+
+  @ApiOperation({
+    summary: 'Вывести список всех заказов определенного филиала',
+  })
+  @Get('byBranch/:branchId')
+  async getBranchOrders(@Param('branchId') branchId: number) {
+    return await this.basketService.listOrdersByBranch(branchId);
+  }
+
   @ApiOperation({ summary: 'Найти заказ по id' })
   @Get(':orderId')
   async getOneOrder(@Param('orderId') orderId: number) {
