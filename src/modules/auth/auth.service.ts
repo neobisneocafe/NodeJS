@@ -23,6 +23,7 @@ import { ListParamsDto } from 'src/base/dto/list-params.dto';
 import { ListDto } from 'src/base/dto/list.dto';
 import { Hash } from 'src/utils/hash.utils';
 import * as bcrypt from 'bcrypt';
+import { Barista } from '../barista/entities/barista.entity';
 
 @Injectable()
 export class AuthService {
@@ -37,6 +38,8 @@ export class AuthService {
     private readonly smsNikitaService: SmsNikitaService,
     @InjectRepository(Admin)
     private readonly adminRepo: Repository<Admin>,
+    @InjectRepository(Barista)
+    private readonly baristaRepo: Repository<Barista>,
   ) {}
 
   private createPayload(user: User): JwtPayload {
@@ -133,7 +136,7 @@ export class AuthService {
     };
   }
 
-  private async sendConfirmationCode(phoneNumber: string): Promise<any> {
+  async sendConfirmationCode(phoneNumber: string): Promise<any> {
     //тут был void
     const codeToConfirm = Math.random().toString().substr(2, 4);
     const confirmCode = new ConfirmCode();
@@ -209,6 +212,9 @@ export class AuthService {
       where: { refresh_token },
     });
     const admin = await this.adminRepo.findOne({ where: { refresh_token } });
+    const barista = await this.baristaRepo.findOneBy({
+      refresh_token,
+    });
 
     if (!user && !admin) {
       throw new UnauthorizedException('Refresh token is invalid');
@@ -234,12 +240,6 @@ export class AuthService {
   }
   // ==============================================================================================
   async create(loginDto: LoginAdminDto): Promise<Admin> {
-    const adminExists = await this.adminRepo.findOne({
-      where: { hasAdmin: true },
-    });
-    if (adminExists) {
-      throw new ConflictException('Admin is already exists');
-    }
     const admin = new Admin();
     loginDto.password = Hash.make(loginDto.password);
     admin.absorbFromDto(loginDto);
@@ -252,24 +252,6 @@ export class AuthService {
     });
     return findOnebyUsername;
   }
-
-  // async login(login: LoginAdminDto) {
-  //   const admin = await this.adminRepo.findOne({
-  //     where: { username: login.username }
-  //   });
-  //   if (!admin) {
-  //     throw new UnauthorizedException();
-  //   }
-  //   const payload = this.createAdminPayload(admin);
-  //   const refreshToken = this.generateRefreshToken();
-  //   admin.refresh_token = refreshToken;
-  //   admin.hasAdmin = true;
-  //   await this.adminRepo.save(admin);
-  //   return {
-  //     access_token: this.generateAccessToken(payload),
-  //     refreshToken,
-  //   };
-  // }
 
   async login(login: LoginAdminDto) {
     const admin = await this.adminRepo.findOne({
@@ -294,7 +276,7 @@ export class AuthService {
 
   async loginNew(login: LoginAdminDto) {
     const admin = await this.adminRepo.findOne({
-      where: { username: login.username },
+      where: [{ username: login.username }, { password: login.password }],
     });
 
     if (!admin) {

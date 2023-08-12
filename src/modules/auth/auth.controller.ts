@@ -94,7 +94,7 @@ export class AuthController {
     if (!admin) {
       admin = await this.authService.create(logindto);
     }
-    return await this.authService.login(logindto);
+    return await this.authService.loginNew(logindto);
   }
 
   @Get('admin/profile')
