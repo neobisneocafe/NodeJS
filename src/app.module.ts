@@ -10,12 +10,14 @@ import { CategoryModule } from './modules/category/category.module';
 import { DishesModule } from './modules/dishes/dishes.module';
 import { BasketModule } from './modules/basket/basket.module';
 import { MenuItemsModule } from './modules/menu-items/menu-items.module';
+import { BaristaModule } from './modules/barista/barista.module';
 
 @Module({
   imports: [
     ImageModule,
     AuthModule,
     UserModule,
+    BaristaModule,
     CategoryModule,
     ConfigModule.forRoot({
       isGlobal: true,

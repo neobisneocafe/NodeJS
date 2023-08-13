@@ -133,7 +133,7 @@ export class AuthService {
     };
   }
 
-  private async sendConfirmationCode(phoneNumber: string): Promise<any> {
+  async sendConfirmationCode(phoneNumber: string): Promise<any> {
     //тут был void
     const codeToConfirm = Math.random().toString().substr(2, 4);
     const confirmCode = new ConfirmCode();
@@ -234,12 +234,6 @@ export class AuthService {
   }
   // ==============================================================================================
   async create(loginDto: LoginAdminDto): Promise<Admin> {
-    const adminExists = await this.adminRepo.findOne({
-      where: { hasAdmin: true },
-    });
-    if (adminExists) {
-      throw new ConflictException('Admin is already exists');
-    }
     const admin = new Admin();
     loginDto.password = Hash.make(loginDto.password);
     admin.absorbFromDto(loginDto);
@@ -252,24 +246,6 @@ export class AuthService {
     });
     return findOnebyUsername;
   }
-
-  // async login(login: LoginAdminDto) {
-  //   const admin = await this.adminRepo.findOne({
-  //     where: { username: login.username }
-  //   });
-  //   if (!admin) {
-  //     throw new UnauthorizedException();
-  //   }
-  //   const payload = this.createAdminPayload(admin);
-  //   const refreshToken = this.generateRefreshToken();
-  //   admin.refresh_token = refreshToken;
-  //   admin.hasAdmin = true;
-  //   await this.adminRepo.save(admin);
-  //   return {
-  //     access_token: this.generateAccessToken(payload),
-  //     refreshToken,
-  //   };
-  // }
 
   async login(login: LoginAdminDto) {
     const admin = await this.adminRepo.findOne({
@@ -294,7 +270,7 @@ export class AuthService {
 
   async loginNew(login: LoginAdminDto) {
     const admin = await this.adminRepo.findOne({
-      where: { username: login.username },
+      where: [{ username: login.username }, { password: login.password }],
     });
 
     if (!admin) {
