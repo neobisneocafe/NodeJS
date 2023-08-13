@@ -18,7 +18,7 @@ import { BaristaService } from '../barista/barista.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, ConfirmCode, Admin,Barista]),
+    TypeOrmModule.forFeature([User, ConfirmCode, Admin, Barista]),
     UserModule,
     PassportModule,
     SmsNikitaModule,
@@ -29,6 +29,6 @@ import { BaristaService } from '../barista/barista.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy,BaristaService],
+  providers: [AuthService, LocalStrategy, JwtStrategy, BaristaService],
 })
 export class AuthModule {}

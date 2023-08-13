@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, UnauthorizedException,} from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateBaristaDto } from './dto/create-barista.dto';
 import { UpdateBaristaDto } from './dto/update-barista.dto';
 import { BaseService } from 'src/base/base.service';
@@ -7,7 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AuthService } from '../auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from 'jsonwebtoken'
+import { JwtPayload } from 'jsonwebtoken';
 
 @Injectable()
 export class BaristaService extends BaseService<Barista> {
@@ -19,7 +23,7 @@ export class BaristaService extends BaseService<Barista> {
   ) {
     super(baristaRepo);
   }
-  
+
   async createOneBarista(dto: CreateBaristaDto) {
     const barista = new Barista();
     barista.absorbFromDto(dto);
@@ -80,11 +84,11 @@ export class BaristaService extends BaseService<Barista> {
     return `Полученный новый код подтверждения ${newLoginCode}`;
   }
 
-  async refreshAccessToken(refresh_token:string){
+  async refreshAccessToken(refresh_token: string) {
     const barista = await this.baristaRepo.findOne({
-      where:{refresh_token:refresh_token}
-    })
-    if(!barista)throw new UnauthorizedException()
+      where: { refresh_token: refresh_token },
+    });
+    if (!barista) throw new UnauthorizedException();
     const payload = {
       id: barista.id,
       firstName: barista.firstName,
@@ -93,8 +97,7 @@ export class BaristaService extends BaseService<Barista> {
       role: barista.role,
     };
     return {
-      access_token: await this.jwtService.sign(payload)
-    }
+      access_token: await this.jwtService.sign(payload),
+    };
   }
-
 }

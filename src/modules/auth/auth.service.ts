@@ -39,7 +39,7 @@ export class AuthService {
     @InjectRepository(Admin)
     private readonly adminRepo: Repository<Admin>,
     @InjectRepository(Barista)
-    private readonly baristaRepo: Repository<Barista>
+    private readonly baristaRepo: Repository<Barista>,
   ) {}
 
   private createPayload(user: User): JwtPayload {
@@ -213,8 +213,8 @@ export class AuthService {
     });
     const admin = await this.adminRepo.findOne({ where: { refresh_token } });
     const barista = await this.baristaRepo.findOneBy({
-      refresh_token
-    })
+      refresh_token,
+    });
 
     if (!user && !admin) {
       throw new UnauthorizedException('Refresh token is invalid');

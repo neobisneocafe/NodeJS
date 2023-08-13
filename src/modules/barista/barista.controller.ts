@@ -24,7 +24,7 @@ export class BaristaController {
   ) {}
 
   @Post()
-  @ApiOperation({summary:'Создать баристу'})
+  @ApiOperation({ summary: 'Создать баристу' })
   create(@Body() createBaristaDto: CreateBaristaDto) {
     return this.baristaService.createOneBarista(createBaristaDto);
   }
@@ -56,7 +56,7 @@ export class BaristaController {
       },
     },
   })
-  @ApiOperation({summary:'Подтвердить код отправленный на номер телефона'})
+  @ApiOperation({ summary: 'Подтвердить код отправленный на номер телефона' })
   async verify(@Body('verificationCode') verificationCode: string) {
     return await this.baristaService.berifyCodeToBarista(verificationCode);
   }
@@ -79,8 +79,8 @@ export class BaristaController {
   }
 
   @Get('list')
-  @ApiOperation({summary:'Получить список всех барист'})
-  async getlist(@Query() ListParamsDto:ListParamsDto){
-    return await this.baristaService.list(ListParamsDto)
+  @ApiOperation({ summary: 'Получить список всех барист' })
+  async getlist(@Query() ListParamsDto: ListParamsDto) {
+    return await this.baristaService.list(ListParamsDto);
   }
 }
