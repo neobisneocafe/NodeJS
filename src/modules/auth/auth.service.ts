@@ -23,6 +23,7 @@ import { ListParamsDto } from 'src/base/dto/list-params.dto';
 import { ListDto } from 'src/base/dto/list.dto';
 import { Hash } from 'src/utils/hash.utils';
 import * as bcrypt from 'bcrypt';
+import { Barista } from '../barista/entities/barista.entity';
 
 @Injectable()
 export class AuthService {
@@ -37,6 +38,8 @@ export class AuthService {
     private readonly smsNikitaService: SmsNikitaService,
     @InjectRepository(Admin)
     private readonly adminRepo: Repository<Admin>,
+    @InjectRepository(Barista)
+    private readonly baristaRepo: Repository<Barista>
   ) {}
 
   private createPayload(user: User): JwtPayload {
@@ -209,6 +212,9 @@ export class AuthService {
       where: { refresh_token },
     });
     const admin = await this.adminRepo.findOne({ where: { refresh_token } });
+    const barista = await this.baristaRepo.findOneBy({
+      refresh_token
+    })
 
     if (!user && !admin) {
       throw new UnauthorizedException('Refresh token is invalid');

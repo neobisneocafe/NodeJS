@@ -12,19 +12,23 @@ import { ConfirmCode } from './entities/auth.entity';
 import { SmsNikitaModule } from '../../services/sms-nikita.ts/sms-nikita.module';
 import { PassportModule } from '@nestjs/passport';
 import { Admin } from './entities/admins.entity';
+import { Barista } from '../barista/entities/barista.entity';
+import { BaristaModule } from '../barista/barista.module';
+import { BaristaService } from '../barista/barista.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, ConfirmCode, Admin]),
+    TypeOrmModule.forFeature([User, ConfirmCode, Admin,Barista]),
     UserModule,
     PassportModule,
     SmsNikitaModule,
+    // BaristaModule,
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '1d' },
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy,BaristaService],
 })
 export class AuthModule {}
