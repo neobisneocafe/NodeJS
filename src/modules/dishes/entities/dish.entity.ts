@@ -39,4 +39,10 @@ export class Dish extends BaseEntity {
   @OneToMany(() => MenuItem, (menuItem) => menuItem.dish)
   @JoinColumn()
   menuItem: MenuItem[];
+
+  @Column({
+    type: 'boolean',
+    default: false,
+  })
+  isAddon: boolean;
 }

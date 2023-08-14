@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { BaseDto } from 'src/base/dto/base.dto.';
 import { Image } from 'src/modules/image/entities/image.entity';
 
@@ -28,4 +28,8 @@ export class CreateDishDto extends BaseDto {
   @ApiProperty()
   @IsOptional()
   items: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  isAddon: boolean;
 }
