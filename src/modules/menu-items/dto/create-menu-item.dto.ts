@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { BaseDto } from 'src/base/dto/base.dto.';
+import { ItemsEnum } from '../enum/enum';
 
 export class CreateMenuItemDto extends BaseDto {
   @ApiProperty()
@@ -23,4 +24,10 @@ export class CreateMenuItemDto extends BaseDto {
   @ApiProperty()
   @IsString()
   min_limit: string;
+
+  @ApiProperty({
+    enum: ItemsEnum,
+  })
+  @IsEnum(ItemsEnum)
+  type: ItemsEnum;
 }

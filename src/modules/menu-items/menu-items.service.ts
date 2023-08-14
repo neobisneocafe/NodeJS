@@ -6,6 +6,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Image } from '../image/entities/image.entity';
 import { ImageService } from '../image/image.service';
+import { ListParamsDto } from 'src/base/dto/list-params.dto';
+import { ItemsEnum } from './enum/enum';
+import { ListDto } from 'src/base/dto/list.dto';
 
 @Injectable()
 export class MenuItemsService extends BaseService<MenuItem> {
@@ -48,5 +51,30 @@ export class MenuItemsService extends BaseService<MenuItem> {
     newItem.image = image;
     await this.menuItemRepo.save(newItem);
     return newItem;
+  }
+
+  async listByENum(listParamsDto: ListParamsDto, type: ItemsEnum) {
+    const array = await this.repository
+      .createQueryBuilder('menu_items')
+      .where('menu_items.type = :type', { type })
+      .limit(listParamsDto.limit)
+      .offset(listParamsDto.countOffset())
+      .orderBy(
+        `menu_items.${listParamsDto.getOrderedField()}`,
+        listParamsDto.order,
+      )
+      .getMany();
+    const itemsCount = await this.repository.createQueryBuilder().getCount();
+    return new ListDto(array, {
+      page: listParamsDto.page,
+      itemsCount,
+      limit: listParamsDto.limit,
+      order: listParamsDto.order,
+      orderField: listParamsDto.orderField,
+    });
+  }
+
+  async getTypesOfMenuItems() {
+    return ItemsEnum;
   }
 }
