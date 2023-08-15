@@ -57,7 +57,7 @@ export class BasketController {
   @UseGuards(JwtAuthGuard, RoleGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Повторить заказ' })
-  @Post(':branchId/:orderId/:uniqueCode')
+  @Post('repeat/:branchId/:orderId/:uniqueCode')
   async repeatOrder(
     @Param('branchId') branchId: number,
     @Param('orderId') orderId: number,
