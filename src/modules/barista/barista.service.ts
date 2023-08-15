@@ -32,20 +32,20 @@ export class BaristaService extends BaseService<Barista> {
     return barista;
   }
 
-  async sendVerifyCode(phoneNumber:string){
+  async sendVerifyCode(phoneNumber: string) {
     const barista = await this.baristaRepo.findOne({
-      where:{phoneNumber}
-    })
-    if(!barista){
-      throw new BadRequestException('Бариста не был найден')
+      where: { phoneNumber },
+    });
+    if (!barista) {
+      throw new BadRequestException('Бариста не был найден');
     }
-    if(!barista.confirm){
-      throw new BadRequestException('Бариста не был зарегистрирован')
+    if (!barista.confirm) {
+      throw new BadRequestException('Бариста не был зарегистрирован');
     }
-    const loginCode = await this.authService.sendConfirmationCode(phoneNumber)
-    barista.login_code = loginCode
-    await this.baristaRepo.save(barista)
-    console.log('Полученный код подтверждения:', loginCode)
+    const loginCode = await this.authService.sendConfirmationCode(phoneNumber);
+    barista.login_code = loginCode;
+    await this.baristaRepo.save(barista);
+    console.log('Полученный код подтверждения:', loginCode);
   }
 
   async verifyCode(
@@ -57,7 +57,7 @@ export class BaristaService extends BaseService<Barista> {
     if (!barista) {
       throw new BadRequestException('Неправильный код подтверждения');
     }
-      const payload = {
+    const payload = {
       id: barista.id,
       firstName: barista.firstName,
       lastName: barista.lastName,
@@ -65,7 +65,7 @@ export class BaristaService extends BaseService<Barista> {
       role: barista.role,
     };
     const accessToken = this.authService.generateAccessToken(payload);
-    const refreshToken = this.authService.generateRefreshToken()
+    const refreshToken = this.authService.generateRefreshToken();
     barista.refresh_token = refreshToken;
     await this.baristaRepo.save(barista);
     return { accessToken, refreshToken };

@@ -126,4 +126,13 @@ export class DishesService extends BaseService<Dish> {
     await this.dishRepo.save(dish);
     return dish;
   }
+
+  async listByAddonsType(isAddon: boolean) {
+    const array = await this.repository
+      .createQueryBuilder('dish')
+      .where('dish.isAddon = :isAddon', { isAddon })
+      .getMany();
+
+    return array;
+  }
 }

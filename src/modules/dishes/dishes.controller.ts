@@ -55,6 +55,12 @@ export class DishesController {
           type: 'string',
           example: '[1,2]',
         },
+        isAddon: {
+          // Добавляем поле isAddon
+          type: 'boolean',
+          example: false,
+          description: 'Признак, является ли блюдо приятным дополнением',
+        },
       },
     },
   })
@@ -75,5 +81,11 @@ export class DishesController {
   @ApiOperation({ summary: 'Получить список блюд опеределенной категории' })
   async getDishesByCategory(@Param('categoryName') categoryName: string) {
     return this.dishesService.getProductsSortedByCategory(categoryName);
+  }
+
+  @Get('/sorted/by/type')
+  @ApiOperation({ summary: 'Получить сортированный по типу ингредиенты' })
+  async findUsersByStatus(@Query('isAddon') isAddon: boolean) {
+    return await this.dishesService.listByAddonsType(isAddon);
   }
 }
