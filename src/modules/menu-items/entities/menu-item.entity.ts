@@ -9,6 +9,7 @@ import {
   ManyToOne,
   OneToOne,
 } from 'typeorm';
+import { ItemsEnum } from '../enum/enum';
 
 @Entity()
 export class MenuItem extends BaseEntity {
@@ -46,4 +47,12 @@ export class MenuItem extends BaseEntity {
   @ManyToOne(() => Dish, (dish) => dish.menuItem, { cascade: true })
   @JoinColumn()
   dish: Dish;
+
+  @Column({
+    type:'enum',
+    enum: ItemsEnum,
+    nullable:true
+  })
+  type: ItemsEnum
+
 }
