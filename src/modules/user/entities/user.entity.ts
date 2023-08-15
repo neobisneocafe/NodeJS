@@ -3,6 +3,7 @@ import { Column, Entity, JoinColumn, OneToMany } from 'typeorm';
 import { UserRoleEnum } from '../enums/user.role.enum';
 import { TableEntity } from 'src/modules/qrcode/entities/table.entity';
 import { Basket } from 'src/modules/basket/entities/basket.entity';
+import { Max, Min } from 'class-validator';
 
 @Entity()
 export class User extends BaseEntity {
@@ -62,6 +63,11 @@ export class User extends BaseEntity {
   @OneToMany(() => Basket, (basket) => basket.user, { cascade: true })
   @JoinColumn()
   orders: Basket[];
+
+  @Column({ default: 0 })
+  @Min(0)
+  @Max(1000)
+  bonusPoints: number;
 
   // @Column({ nullable: true })
   // refresh_token_expires: Date;
