@@ -47,13 +47,16 @@ export class TableService extends BaseService<TableEntity> {
   async bookTable(userId: number, bookTableDto: BookTableDto) {
     const { uniqueCode, branchId } = bookTableDto;
     const user = await this.userService.getProfile(userId);
-    const table = await this.tableRepo.findOne({
-      where: { uniqueCode: uniqueCode, branch: { id: branchId } },
-      relations: ['branch'],
+    const branch = await this.branchRepo.findOne({
+      where: { id: branchId },
+      relations: ['tables'],
     });
-    // console.log(user);
+    await this.checkIfExcist(branch, 'branch', branchId);
     await this.checkIfExcist(user, 'user', userId);
-    await this.checkIfExcist(table, 'table', bookTableDto.uniqueCode);
+    const table = await this.tableRepo.findOne({
+      where: { uniqueCode: uniqueCode },
+    });
+    await this.checkTableUniqueCode(branch, table.uniqueCode);
     if (user.table[0]) {
       throw new BadRequestException('У вас есть забронированный столик');
     }
@@ -67,21 +70,27 @@ export class TableService extends BaseService<TableEntity> {
     return null;
   }
 
-  async releaseTable(userId: number, releaseTable: ReleaseTableDto) {
+  async releaseTable(releaseTable: ReleaseTableDto) {
+    const branch = await this.branchRepo.findOne({
+      where: { id: releaseTable.branchId },
+      relations: ['tables'],
+    });
+    await this.checkIfExcist(branch, 'branch', releaseTable.branchId);
     const table = await this.tableRepo.findOne({
       where: { id: releaseTable.tableId },
+      relations: ['user'],
     });
-    const user = await this.userService.getProfile(userId);
-    await this.checkIfExcist(user, 'user', userId);
     await this.checkIfExcist(table, 'table', releaseTable.tableId);
-    if (table === user.table[0] || table.isBooked) {
-      table.isBooked = false;
-      user.table = [];
-      await this.userService.save(user);
-      await this.tableRepo.save(table);
-      return user;
+    await this.checkTableUniqueCode(branch, table.uniqueCode);
+    if (!table.isBooked && !table.user) {
+      throw new BadRequestException('Столик не занят');
     }
-    return user;
+    const user = await this.userService.getProfile(table.user.id);
+    user.table = [];
+    table.isBooked = false;
+    delete table.user;
+    await this.userService.save(user);
+    return await this.tableRepo.save(table);
   }
 
   async getMyTable(userId: number) {
@@ -120,6 +129,18 @@ export class TableService extends BaseService<TableEntity> {
       await this.checkIfUnique(uniqueCode);
     }
     return uniqueCode;
+  }
+  private async checkTableUniqueCode(branch, uniqueCode) {
+    const tables = branch.tables;
+    const uniqueCodes = [];
+    for (let i = 0; i < tables.length; i++) {
+      uniqueCodes.push(tables[i].uniqueCode);
+    }
+    if (!uniqueCodes.includes(uniqueCode)) {
+      throw new BadRequestException(
+        `Поле table c uniqueCode: ${uniqueCode} не найдено в филиале с id: ${branch.id}`,
+      );
+    }
   }
 
   private async checkTableName(data: CreateTableDto) {

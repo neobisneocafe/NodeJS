@@ -17,11 +17,11 @@ import { UserRoleEnum } from '../user/enums/user.role.enum';
 import { Roles } from '../auth/roles/role.decorator';
 import { OrderDto } from './dto/order.dto';
 
-@ApiTags('Корзина и заказы')
 @Controller('basket')
 export class BasketController {
   constructor(private readonly basketService: BasketService) {}
 
+  @ApiTags('Корзина и заказы для пользователя')
   @Roles(UserRoleEnum.USER)
   @UseGuards(JwtAuthGuard, RoleGuard)
   @ApiBearerAuth()
@@ -31,26 +31,14 @@ export class BasketController {
     return await this.basketService.getAllMyOrders(req.user.id);
   }
 
-  @ApiOperation({ summary: 'Вывести список всех заказов' })
-  @Get('all')
-  async getAllOrder() {
-    return await this.basketService.listOrders();
-  }
-
-  @ApiOperation({
-    summary: 'Вывести список всех заказов определенного филиала',
-  })
-  @Get('byBranch/:branchId')
-  async getBranchOrders(@Param('branchId') branchId: number) {
-    return await this.basketService.listOrdersByBranch(branchId);
-  }
-
+  @ApiTags('Корзина и заказы для пользователя')
   @ApiOperation({ summary: 'Найти заказ по id' })
   @Get(':orderId')
   async getOneOrder(@Param('orderId') orderId: number) {
     return await this.basketService.getOrder(orderId);
   }
 
+  @ApiTags('Корзина и заказы для пользователя')
   @Roles(UserRoleEnum.USER)
   @UseGuards(JwtAuthGuard, RoleGuard)
   @ApiBearerAuth()
@@ -64,6 +52,7 @@ export class BasketController {
     return await this.basketService.order(req.user.id, orderDto, +branchId);
   }
 
+  @ApiTags('Корзина и заказы для пользователя')
   @Roles(UserRoleEnum.USER)
   @UseGuards(JwtAuthGuard, RoleGuard)
   @ApiBearerAuth()
@@ -77,13 +66,31 @@ export class BasketController {
     return await this.basketService.repeat(req.user.id, +orderId, +branchId);
   }
 
-  @ApiOperation({ summary: 'Подтвердить и завершить заказ (для баристы)' })
+  @ApiTags('Корзина и заказы для админа или баристы')
+  @ApiOperation({ summary: 'Вывести список всех заказов' })
+  @Get('all')
+  async getAllOrder() {
+    return await this.basketService.listOrders();
+  }
+
+  @ApiTags('Корзина и заказы для админа или баристы')
+  @ApiOperation({
+    summary: 'Вывести список всех заказов определенного филиала',
+  })
+  @Get('byBranch/:branchId')
+  async getBranchOrders(@Param('branchId') branchId: number) {
+    return await this.basketService.listOrdersByBranch(branchId);
+  }
+
+  @ApiTags('Корзина и заказы для админа или баристы')
+  @ApiOperation({ summary: 'Подтвердить и завершить заказ' })
   @Patch(':orderId')
   async activateOrder(@Param('orderId') orderId: number) {
     return await this.basketService.approveOrder(orderId);
   }
 
-  @ApiOperation({ summary: 'Удалить заказ (для баристы)' })
+  @ApiTags('Корзина и заказы для админа или баристы')
+  @ApiOperation({ summary: 'Удалить заказ' })
   @Delete(':orderId')
   async deleteOrder(@Param('orderId') orderId: number) {
     return await this.basketService.deleteOrder(orderId);

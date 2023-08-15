@@ -11,5 +11,6 @@ import { TablesGateway } from './table.gateway';
   imports: [TypeOrmModule.forFeature([TableEntity, BranchEntity]), UserModule],
   providers: [TableService, TablesGateway],
   controllers: [TableController],
+  exports: [TableService],
 })
 export class QrcodeModule {}
