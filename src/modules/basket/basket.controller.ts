@@ -57,13 +57,19 @@ export class BasketController {
   @UseGuards(JwtAuthGuard, RoleGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Повторить заказ' })
-  @Post(':branchId/:orderId')
+  @Post(':branchId/:orderId/:uniqueCode')
   async repeatOrder(
     @Param('branchId') branchId: number,
     @Param('orderId') orderId: number,
+    @Param('uniqueCode') uniqueCode: string,
     @Req() req,
   ) {
-    return await this.basketService.repeat(req.user.id, +orderId, +branchId);
+    return await this.basketService.repeat(
+      req.user.id,
+      +orderId,
+      +branchId,
+      uniqueCode,
+    );
   }
 
   @ApiTags('Корзина и заказы для админа или баристы')

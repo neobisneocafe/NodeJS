@@ -56,6 +56,9 @@ export class TableService extends BaseService<TableEntity> {
     const table = await this.tableRepo.findOne({
       where: { uniqueCode: uniqueCode },
     });
+    if (!table) {
+      throw new BadRequestException('Столик не найден');
+    }
     await this.checkTableUniqueCode(branch, table.uniqueCode);
     if (user.table[0]) {
       throw new BadRequestException('У вас есть забронированный столик');

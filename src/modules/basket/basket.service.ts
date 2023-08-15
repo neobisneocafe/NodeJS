@@ -129,8 +129,17 @@ export class BasketService extends BaseService<Basket> {
     return orders;
   }
 
-  async repeat(userId: number, orderId: number, branchId: number) {
+  async repeat(
+    userId: number,
+    orderId: number,
+    branchId: number,
+    uniqueCode: string,
+  ) {
     const user = await this.userService.getProfile(userId);
+    const booltableDto = new BookTableDto();
+    booltableDto.branchId = branchId;
+    booltableDto.uniqueCode = uniqueCode;
+    await this.tableService.bookTable(userId, booltableDto);
     const order = await this.basketRepo.findOne({
       where: { id: orderId },
       relations: ['dishes', 'dishes.image', 'branch', 'dishes.category'],
