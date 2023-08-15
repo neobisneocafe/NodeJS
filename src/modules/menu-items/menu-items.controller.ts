@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body, Query,Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Param } from '@nestjs/common';
 import { MenuItemsService } from './menu-items.service';
 import { CreateMenuItemDto } from './dto/create-menu-item.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ListParamsDto } from 'src/base/dto/list-params.dto';
-import { ApiBody, ApiConsumes} from '@nestjs/swagger';
+import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { ItemsEnum } from './enum/enum';
 @ApiTags('Ингредиенты')
 @Controller('menu-items')
@@ -30,13 +30,12 @@ export class MenuItemsController {
     @Query() listParamsDto: ListParamsDto,
     @Query('type') type: ItemsEnum,
   ) {
-    return await this.menuItemsService.listByENum(listParamsDto,type)
+    return await this.menuItemsService.listByENum(listParamsDto, type);
   }
 
   @Get('get/types')
-  @ApiOperation({summary:'Получить список типов для ингредиентов'})
-  async getTypes(){
-    return await this.menuItemsService.getTypesOfMenuItems()
+  @ApiOperation({ summary: 'Получить список типов для ингредиентов' })
+  async getTypes() {
+    return await this.menuItemsService.getTypesOfMenuItems();
   }
-
 }

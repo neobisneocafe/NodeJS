@@ -26,8 +26,8 @@ export class CreateMenuItemDto extends BaseDto {
   min_limit: string;
 
   @ApiProperty({
-    enum: ItemsEnum
+    enum: ItemsEnum,
   })
   @IsEnum(ItemsEnum)
-  type:ItemsEnum
+  type: ItemsEnum;
 }

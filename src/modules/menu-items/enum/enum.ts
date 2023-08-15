@@ -1,4 +1,4 @@
-export enum ItemsEnum{
-    MILK = 'MILK',
-    SYRUP = 'SYRUP'
+export enum ItemsEnum {
+  MILK = 'MILK',
+  SYRUP = 'SYRUP',
 }

@@ -49,10 +49,9 @@ export class MenuItem extends BaseEntity {
   dish: Dish;
 
   @Column({
-    type:'enum',
+    type: 'enum',
     enum: ItemsEnum,
-    nullable:true
+    nullable: true,
   })
-  type: ItemsEnum
-
+  type: ItemsEnum;
 }

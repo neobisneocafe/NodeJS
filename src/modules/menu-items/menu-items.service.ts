@@ -53,14 +53,17 @@ export class MenuItemsService extends BaseService<MenuItem> {
     return newItem;
   }
 
-  async listByENum(listParamsDto: ListParamsDto, type: ItemsEnum){
+  async listByENum(listParamsDto: ListParamsDto, type: ItemsEnum) {
     const array = await this.repository
-    .createQueryBuilder('menu_items')
-    .where('menu_items.type = :type',{type})
-    .limit(listParamsDto.limit)
-    .offset(listParamsDto.countOffset())
-    .orderBy(`menu_items.${listParamsDto.getOrderedField()}`, listParamsDto.order)
-    .getMany();
+      .createQueryBuilder('menu_items')
+      .where('menu_items.type = :type', { type })
+      .limit(listParamsDto.limit)
+      .offset(listParamsDto.countOffset())
+      .orderBy(
+        `menu_items.${listParamsDto.getOrderedField()}`,
+        listParamsDto.order,
+      )
+      .getMany();
     const itemsCount = await this.repository.createQueryBuilder().getCount();
     return new ListDto(array, {
       page: listParamsDto.page,
@@ -71,7 +74,7 @@ export class MenuItemsService extends BaseService<MenuItem> {
     });
   }
 
-  async getTypesOfMenuItems(){
-    return ItemsEnum
+  async getTypesOfMenuItems() {
+    return ItemsEnum;
   }
 }

@@ -54,7 +54,7 @@ export class DishesController {
         items: {
           type: 'string',
           example: '[1,2]',
-        }
+        },
       },
     },
   })
