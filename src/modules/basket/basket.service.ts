@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Basket } from './entities/basket.entity';
 import { Repository } from 'typeorm';
@@ -7,6 +7,9 @@ import { OrderDto } from './dto/order.dto';
 import { UserService } from '../user/user.service';
 import { DishesService } from '../dishes/dishes.service';
 import { BranchService } from '../branch/branch.service';
+import { TableService } from '../qrcode/table.service';
+import { BookTableDto } from '../qrcode/dto/book_table.dto';
+import { ReleaseTableDto } from '../qrcode/dto/release_table.dto';
 
 @Injectable()
 export class BasketService extends BaseService<Basket> {
@@ -16,6 +19,7 @@ export class BasketService extends BaseService<Basket> {
     private readonly userService: UserService,
     private readonly dishesService: DishesService,
     private readonly branchService: BranchService,
+    private readonly tableService: TableService,
   ) {
     super(basketRepo);
   }
@@ -23,13 +27,32 @@ export class BasketService extends BaseService<Basket> {
   async getOrder(id: number) {
     const order = await this.basketRepo.findOne({
       where: { id: id },
-      relations: ['dishes', 'dishes.image', 'branch', 'dishes.category'],
+      relations: [
+        'dishes',
+        'dishes.image',
+        'branch',
+        'dishes.category',
+        'user',
+        'user.table',
+      ],
     });
     await this.checkIfExcist(order, 'order', id);
     return order;
   }
 
   async order(userId: number, data: OrderDto, branchId: number) {
+    const branch = await this.branchService.get(branchId);
+    await this.checkIfExcist(branch, 'branch', branchId);
+    const user = await this.userService.getProfile(userId);
+    if (user.bonusPoints < data.bonusPoints) {
+      throw new BadRequestException(
+        'У вас недостаточно бонусов для списывания',
+      );
+    }
+    await this.checkIfExcist(user, 'user', userId);
+    const bookTableDto = new BookTableDto();
+    bookTableDto.branchId = branchId;
+    bookTableDto.uniqueCode = data.uniqueCode;
     const dishId = data.dishId;
     const dishesList = [];
     for (let i = 0; i < dishId.length; i++) {
@@ -37,22 +60,24 @@ export class BasketService extends BaseService<Basket> {
       await this.checkIfExcist(dish, 'dish', dishId[i]);
       dishesList.push(dish);
     }
-    const branch = await this.branchService.get(branchId);
-    await this.checkIfExcist(branch, 'branch', branchId);
-    const user = await this.userService.getProfile(userId);
-    await this.checkIfExcist(user, 'user', userId);
+
     const newOrder = new Basket();
     let dishesPrice = 0;
     for (let i = 0; i < dishesList.length; i++) {
       dishesPrice += dishesList[i].price;
     }
-    const serviceCost = dishesPrice / 10;
+    if (data.bonusPoints > dishesPrice) {
+      data.bonusPoints = dishesPrice;
+    }
     newOrder.branch = branch;
     newOrder.dishesPrice = dishesPrice;
-    newOrder.serviceCost = serviceCost;
-    newOrder.overall = dishesPrice + serviceCost;
+    newOrder.bonusPoints = data.bonusPoints;
+    newOrder.overall = dishesPrice - data.bonusPoints;
+    user.bonusPoints -= data.bonusPoints;
     newOrder.dishes = dishesList;
     newOrder.user = user;
+    await this.userService.save(user);
+    await this.tableService.bookTable(userId, bookTableDto);
     return await this.basketRepo.save(newOrder);
   }
 
@@ -114,9 +139,21 @@ export class BasketService extends BaseService<Basket> {
     return orders;
   }
 
-  async repeat(userId: number, orderId: number, branchId: number) {
+  async repeat(
+    userId: number,
+    orderId: number,
+    branchId: number,
+    uniqueCode: string,
+  ) {
     const user = await this.userService.getProfile(userId);
-    const order = await this.get(orderId);
+    const booltableDto = new BookTableDto();
+    booltableDto.branchId = branchId;
+    booltableDto.uniqueCode = uniqueCode;
+    await this.tableService.bookTable(userId, booltableDto);
+    const order = await this.basketRepo.findOne({
+      where: { id: orderId },
+      relations: ['dishes', 'dishes.image', 'branch', 'dishes.category'],
+    });
     const branch = await this.branchService.get(branchId);
     await this.checkIfExcist(order, 'order', orderId);
     await this.checkIfExcist(user, 'user', userId);
@@ -133,7 +170,17 @@ export class BasketService extends BaseService<Basket> {
   }
 
   async approveOrder(orderId: number) {
-    const order = await this.basketRepo.findOne({ where: { id: orderId } });
+    const order = await this.basketRepo.findOne({
+      where: { id: orderId },
+      relations: ['user', 'user.table', 'branch'],
+    });
+    await this.checkIfExcist(order, 'order', orderId);
+    const releaseTableDto = new ReleaseTableDto();
+    if (order.user.table[0]) {
+      releaseTableDto.branchId = order.branch.id;
+      releaseTableDto.tableId = order.user.table[0].id;
+      await this.tableService.releaseTable(releaseTableDto);
+    }
     order.isApproved = true;
     order.isPaid = true;
     order.isCompleted = true;
@@ -141,8 +188,17 @@ export class BasketService extends BaseService<Basket> {
   }
 
   async deleteOrder(id: number) {
-    const order = await this.basketRepo.findOne({ where: { id: id } });
+    const order = await this.basketRepo.findOne({
+      where: { id: id },
+      relations: ['user', 'user.table', 'branch'],
+    });
     await this.checkIfExcist(order, 'order', id);
+    const releaseTableDto = new ReleaseTableDto();
+    if (order.user.table[0]) {
+      releaseTableDto.branchId = order.branch.id;
+      releaseTableDto.tableId = order.user.table[0].id;
+      await this.tableService.releaseTable(releaseTableDto);
+    }
     return await this.basketRepo.remove(order);
   }
 }
