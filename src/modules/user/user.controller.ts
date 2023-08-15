@@ -8,12 +8,14 @@ import {
   Patch,
   Req,
   Body,
+  Post,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ListParamsDto } from 'src/base/dto/list-params.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AddBonusDto } from './dto/add-bonus.dto';
 
 @ApiTags('Пользователи')
 @Controller('user')
@@ -39,6 +41,22 @@ export class UserController {
   async getProfile(@Req() req) {
     console.log(req.user);
     return this.userService.getProfile(req?.user?.id);
+  }
+
+  @Get('bonus')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Получение бонусов пользователя' })
+  async getBonuses(@Req() req) {
+    console.log(req.user);
+    const user = await this.userService.getProfile(req?.user?.id);
+    return { bonusPoints: user.bonusPoints };
+  }
+
+  @ApiOperation({ summary: 'Начислить бонусы пользователю (максимум 1000)' })
+  @Patch('bonus')
+  async addBonus(@Body() addBonusDto: AddBonusDto) {
+    return await this.userService.addBonus(addBonusDto);
   }
 
   @Patch('update/profile')

@@ -35,8 +35,8 @@ export class Basket extends BaseEntity {
   dishesPrice: number;
 
   @Column()
-  serviceCost: number;
-
-  @Column()
   overall: number;
+
+  @Column({ default: 0 })
+  bonusPoints: number;
 }

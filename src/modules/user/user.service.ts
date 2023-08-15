@@ -7,6 +7,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ListParamsDto } from 'src/base/dto/list-params.dto';
 import { ListDto } from 'src/base/dto/list.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AddBonusDto } from './dto/add-bonus.dto';
 
 @Injectable()
 export class UserService extends BaseService<User> {
@@ -18,6 +19,13 @@ export class UserService extends BaseService<User> {
   }
   async findOneByConfirmCode(confirmCode: string): Promise<User | null> {
     return this.userRepository.findOneBy({ confirm_code: confirmCode });
+  }
+
+  async addBonus(addBonusDto: AddBonusDto) {
+    const user = await this.getProfile(addBonusDto.userId);
+    await this.checkIfExcist(user, 'user', addBonusDto.userId);
+    user.bonusPoints += addBonusDto.bonusPoints;
+    return await this.save(user);
   }
 
   async findOne(phoneNumber: string) {

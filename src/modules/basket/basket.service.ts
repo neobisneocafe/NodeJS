@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Basket } from './entities/basket.entity';
 import { Repository } from 'typeorm';
@@ -41,10 +41,18 @@ export class BasketService extends BaseService<Basket> {
   }
 
   async order(userId: number, data: OrderDto, branchId: number) {
+    const branch = await this.branchService.get(branchId);
+    await this.checkIfExcist(branch, 'branch', branchId);
+    const user = await this.userService.getProfile(userId);
+    if (user.bonusPoints < data.bonusPoints) {
+      throw new BadRequestException(
+        'У вас недостаточно бонусов для списывания',
+      );
+    }
+    await this.checkIfExcist(user, 'user', userId);
     const bookTableDto = new BookTableDto();
     bookTableDto.branchId = branchId;
     bookTableDto.uniqueCode = data.uniqueCode;
-    await this.tableService.bookTable(userId, bookTableDto);
     const dishId = data.dishId;
     const dishesList = [];
     for (let i = 0; i < dishId.length; i++) {
@@ -52,22 +60,24 @@ export class BasketService extends BaseService<Basket> {
       await this.checkIfExcist(dish, 'dish', dishId[i]);
       dishesList.push(dish);
     }
-    const branch = await this.branchService.get(branchId);
-    await this.checkIfExcist(branch, 'branch', branchId);
-    const user = await this.userService.getProfile(userId);
-    await this.checkIfExcist(user, 'user', userId);
+
     const newOrder = new Basket();
     let dishesPrice = 0;
     for (let i = 0; i < dishesList.length; i++) {
       dishesPrice += dishesList[i].price;
     }
-    const serviceCost = dishesPrice / 10;
+    if (data.bonusPoints > dishesPrice) {
+      data.bonusPoints = dishesPrice;
+    }
     newOrder.branch = branch;
     newOrder.dishesPrice = dishesPrice;
-    newOrder.serviceCost = serviceCost;
-    newOrder.overall = dishesPrice + serviceCost;
+    newOrder.bonusPoints = data.bonusPoints;
+    newOrder.overall = dishesPrice - data.bonusPoints;
+    user.bonusPoints -= data.bonusPoints;
     newOrder.dishes = dishesList;
     newOrder.user = user;
+    await this.userService.save(user);
+    await this.tableService.bookTable(userId, bookTableDto);
     return await this.basketRepo.save(newOrder);
   }
 
