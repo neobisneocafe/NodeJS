@@ -55,6 +55,6 @@ export class TableController {
   @ApiOperation({ summary: 'Освободить столик' })
   @Post('release')
   async releaseTable(@Body() releaseTableDto: ReleaseTableDto) {
-    return await this.tableService.releaseTable(1, releaseTableDto);
+    return await this.tableService.releaseTable(releaseTableDto);
   }
 }

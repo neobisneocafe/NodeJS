@@ -6,6 +6,7 @@ import { Basket } from './entities/basket.entity';
 import { UserModule } from '../user/user.module';
 import { DishesModule } from '../dishes/dishes.module';
 import { BranchModule } from '../branch/branch.module';
+import { QrcodeModule } from '../qrcode/qrcode.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { BranchModule } from '../branch/branch.module';
     UserModule,
     DishesModule,
     BranchModule,
+    QrcodeModule,
   ],
   controllers: [BasketController],
   providers: [BasketService],
