@@ -29,7 +29,7 @@ export class BaristaController {
     return this.baristaService.createOneBarista(createBaristaDto);
   }
 
-  @Post('/send/logincode')
+  @Post('login/send-verification-code')
   @ApiOperation({ summary: 'Отправить код на номер телефона' })
   @ApiBody({
     schema: {
@@ -41,11 +41,14 @@ export class BaristaController {
       },
     },
   })
-  async sendCode(@Body('phoneNumber') phoneNumber: string) {
-    return await this.baristaService.sendVerifyCodeToBarista(phoneNumber);
+  async sendVerificationCode(
+    @Body('phoneNumber') phoneNumber: string,
+  ): Promise<void> {
+    await this.baristaService.sendVerifyCode(phoneNumber);
   }
 
-  @Post('logincode')
+  @Post('login/verify')
+  @ApiOperation({ summary: 'Подтвердить код отправленный на номер телефона' })
   @ApiBody({
     schema: {
       type: 'object',
@@ -56,9 +59,11 @@ export class BaristaController {
       },
     },
   })
-  @ApiOperation({ summary: 'Подтвердить код отправленный на номер телефона' })
-  async verify(@Body('verificationCode') verificationCode: string) {
-    return await this.baristaService.berifyCodeToBarista(verificationCode);
+  async verifyCode(
+    @Body('verificationCode') verificationCode: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const result = await this.baristaService.verifyCode(verificationCode);
+    return result;
   }
 
   @Post('/refresh')
