@@ -66,6 +66,7 @@ export class TableService extends BaseService<TableEntity> {
     if (!user.table[0] && !table.isBooked) {
       table.isBooked = true;
       user.table.push(table);
+      user.bonusPoints += 50;
       await this.tableRepo.save(table);
       await this.userService.save(user);
       return user;

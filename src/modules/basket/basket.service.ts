@@ -77,7 +77,9 @@ export class BasketService extends BaseService<Basket> {
     newOrder.dishes = dishesList;
     newOrder.user = user;
     await this.userService.save(user);
-    await this.tableService.bookTable(userId, bookTableDto);
+    if (bookTableDto.uniqueCode) {
+      await this.tableService.bookTable(userId, bookTableDto);
+    }
     return await this.basketRepo.save(newOrder);
   }
 
