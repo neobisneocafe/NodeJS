@@ -3,8 +3,7 @@ import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class OrderDto {
   @ApiProperty({ example: 'Уникальный код столика' })
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
   uniqueCode: string;
 
   @ApiProperty({ example: [1, 2] })
